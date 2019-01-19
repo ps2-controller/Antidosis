@@ -7,14 +7,19 @@ contract AssetTokenizationContract is TokenizeCore, Ownable{
 	//contract variables
 	address public underlyingToken;
 	uint256 public totalSupply;
+	string public name;
+	string public symbol;
 
 	//mappings
 	mapping (address => uint256) balances;
     mapping (address => mapping (address => uint256)) allowed;
 
-	constructor AssetTokenizationContract(address _tokenToLockAddress, uint256 _erc20Supply, string _erc20Name, uint _erc20Decimals, address _erc20DeploymentAddress, uint _value, uint _duration){
+	constructor AssetTokenizationContract(address _tokenToLockAddress, uint256 _erc20Supply, string _erc20Name, string _erc20Symbol, uint _erc20Decimals, address _erc20DeploymentAddress, uint _value, uint _duration){
 		underlyingToken = _tokenToLockAddress;
 		totalSupply = _erc20Supply;
+		name = _erc20Name;
+		symbol = _erc20Symbol;
+
 	}
 
 
