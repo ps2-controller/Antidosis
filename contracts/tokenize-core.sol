@@ -8,32 +8,46 @@ contract erc20DeploymentInterface{
 	uint erc20Decimals;
 }
 
-contract TokenizeCore is ERC721 {
+contract TokenizeCore is ERC721TokenReceiver {
+
+
+interface ERC721TokenReceiver {
+    function onERC721Received(address _operator, address _from, uint256 _tokenId, bytes _data) external returns(bytes4);
+	
 
 	//state variables
 	bytes32[] locked721Tokens;
 
 	mapping(bytes32 => address) tokenToOwner;
 
-	function lock721Token public (address _tokenToLockAddress, uint256 _tokenToLockId, uint256 _erc20Supply, string _erc20Name, uint erc20Decimals, address erc20DeploymentAddress) {
+	function onERC721Received(address _operator, address _from, uint256 _tokenId, bytes _data) external returns(bytes4){
+		require(lock721Token(_operator, _tokenId, abi.decode(_data, (uint256, string, string, uint, address, uint, uint))), "Error receiving token");
+		return bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"));
+	}
+
+	function lock721Token public (address _tokenToLockAddress, uint256 _tokenToLockId, uint256 _erc20Supply, string _erc20Name, string _erc20Symbol, uint _erc20Decimals, address _erc20DeploymentAddress, uint _value, uint _duration) {
 
 		bytes32 _tokenToLockHash = keccak256(abi.encodePacked(_tokenToLockAddress, _tokenToLockId))
 		locked721Tokens.push(_tokenToLockHash);
 		tokenToOwner[_tokenToLockHash] = msg.sender;
-		freezeErc721Token(_tokenToLockAddress, _tokenToLockId)
-		mintErc20s(_tokenToLockAddress, _erc20Supply, _erc20Name, _erc20Decimals, erc20DeploymentAddress);
+		freezeErc721Token(_tokenToLockAddress, _tokenToLockId);
+		mintErc20s(_tokenToLockAddress, _erc20Supply, _erc20Name, _erc20Symbol _erc20Decimals, _erc20DeploymentAddress, _value, _duration);
 
 
 	}
 
-	function mintErc20s internal (address _tokenToLockAddress, uint256 _erc20Supply, string _erc20Name, uint _erc20Decimals, address erc20DeploymentAddress){
+	function mintErc20s internal (address _tokenToLockAddress, uint256 _erc20Supply, string _erc20Name, string _erc20Symbol, uint _erc20Decimals, address _erc20DeploymentAddress, uint _value, uint _duration){
 		
-		AssetTokenizationContract newAssetTokenizationContract = new AssetTokenizationContract;
-		newAssetTokenizationContract.setUnderlyingToken(_tokenToLockAddress)
+		AssetTokenizationContract newAssetTokenizationContract = new AssetTokenizationContract(_tokenToLockAddress, _erc20Supply, _erc20Name, _erc20Symbol, _erc20Decimals, _erc20DeploymentAddress, _value, _duration);
+
 	}
+
+
+
+
+
 
 	function freezeErc721Token(address _tokenToLockAddress, uint256 _tokenToLockId){
-		_tokenToLockAddress.call.value(0 ether).gas(10)(abi.encodeWithSignature("transfer(string)", "MyName"));
 
 	}
 
