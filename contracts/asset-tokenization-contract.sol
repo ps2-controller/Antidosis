@@ -1,45 +1,64 @@
 pragma solidity ^0.5.0;
-import //Ownable 
+// import Ownable 
 import "./tokenize-core.sol";
 
 contract AssetTokenizationContract is TokenizeCore, Ownable{
 
 	//contract variables
-	address public underlyingToken;
+	UnderlyingToken public contractUnderlyingToken;
+	address distributionAddress;
 	uint256 public totalSupply;
 	string public name;
 	string public symbol;
 	uint8 public decimals;
+	uint taxRate;
+	uint defaultValue = 0;
+	uint defaultDuration = 0;
+
+	//structs
+	struct UnderLyingToken{
+		address underlyingTokenAddress;
+		uint underlyingTokenId;
+	}
+
+	struct HarbingerSet{
+		uint userValue;
+		uint userDuration;
+		bool initialized;
+	}
 
 	//mappings
 	mapping (address => uint256) balances;
     mapping (address => mapping (address => uint256)) allowed;
+    mapping(address => HarbingerSet) harbingerSetByUser;
 
-	constructor AssetTokenizationContract is ERC20 (
-		address _tokenToLockAddress, 
+	constructor AssetTokenizationContract is ERC20, TokenizeCore (
+		address _underlyingTokenAddress, 
+		address _distributionAddress,
+		uint _underlyingTokenId,
 		uint256 _erc20Supply, 
 		string _erc20Name, 
 		string _erc20Symbol, 
-		uint _erc20Decimals, 
-		address _erc20DeploymentAddress, 
-		uint _value, 
-		uint _duration)
+		uint _erc20Decimals,  
+		bytes _deploymentData)
 	{
-		underlyingToken = _tokenToLockAddress;
+		UnderlyingToken.underlyingTokenAddress = _underlyingTokenAddress;
+		UnderlyingToken.underlyingTokenId = _underlyingTokenId;
 		totalSupply = _erc20Supply;
 		name = _erc20Name;
 		symbol = _erc20Symbol;
 		decimals = _erc20Decimals;
-		DeploymentCore newDeploymentCore = new DeploymentCore;
-		address distributionAddress = address(newDeploymentCore);
-		balances[distributionAddress] = _erc20Supply;
+		_distributionAddress.onReceipt(_deploymentData);
+		// set distribution address
+		distributionAddress = _distributionAddress;
+		balances[_distributionAddress] = _erc20Supply;
 	}
 
 
 	function transfer(address _to, uint256 _value) returns (bool success) {
         // makes sure that once the underlying asset is unlocked, the tokens are destroyed
         require (msg.sender != underlyingToken);
-
+        require (harbingerSetByUser[_to].initialized == true);
         if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
@@ -49,6 +68,8 @@ contract AssetTokenizationContract is TokenizeCore, Ownable{
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
+    	require (_from != underlyingToken);
+        require (harbingerSetByUser[_to].initialized == true);
         if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
@@ -88,6 +109,16 @@ contract AssetTokenizationContract is TokenizeCore, Ownable{
         if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { throw; }
         return true;
     }
+
+    	function setHarbinger(_userValue, _userDuration) {
+		require (_userValue != 0);
+		require (_userDuration != 0);
+		if(harbingerSetByUser[msg.sender].initialized == false){
+			harbingerSetByUser[msg.sender].initialized == true;
+		}
+		harbingerSetByUser[msg.sender].userValue = _userValue;
+		harbingerSetByUser[msg.sender].userDuration = _userDuration;
+	}
 
 }
 
