@@ -1,5 +1,5 @@
 pragma solidity ^0.5.0;
-// import Ownable 
+import 'openzeppelin-solidity/contracts/token/ERC20/ERC20.sol';
 import "./tokenize-core.sol";
 
 //todo:
@@ -10,6 +10,7 @@ import "./tokenize-core.sol";
 // set up duration logic
 //set up taxing logic/requirements/penalties
 //enforce appropriate permissioning for everything
+//add taxAddress all the way through
 
 
 //long term todo (nice-to-haves):
@@ -26,6 +27,7 @@ contract AssetTokenizationContract is TokenizeCore, Ownable{
 	address paymentAddress;
 	address tokenizeCore;
 
+
 	uint256 public totalSupply;
 	string public name;
 	string public symbol;
@@ -34,6 +36,7 @@ contract AssetTokenizationContract is TokenizeCore, Ownable{
 	uint defaultValue = 0;
 	uint defaultDuration = 0;
 	uint minimumShares;
+	uint distributionFlag = 0;
 
 	//structs
 	struct UnderlyingToken{
@@ -41,15 +44,13 @@ contract AssetTokenizationContract is TokenizeCore, Ownable{
 		uint underlyingTokenId;
 	}
 
-	struct UserTaxBreakdown{
-		uint userDebt;
-		uint userReleased;
-	}
 
 	struct HarbingerSet{
+		// denominated in paymentAddress - i.e. .5 = .5 shares per Dai
 		uint userValue;
 		//duration in seconds
 		uint userDuration;
+		uint userStartTime;
 		bool initialized;
 	}
 
@@ -58,12 +59,13 @@ contract AssetTokenizationContract is TokenizeCore, Ownable{
 	mapping (address => uint256) balances;
     mapping (address => mapping (address => uint256)) allowed;
     mapping (address => HarbingerSet) harbingerSetByUser;
-    mapping (address => UserTaxBreakdown) taxBreakdownByUser;
+    mapping (address => uint) escrowedByUser;
 
-	constructor AssetTokenizationContract is ERC20, TokenizeCore (
+	constructor(
 		address _underlyingTokenAddress, 
 		address _distributionAddress,
 		address _paymentAddress,
+		address _taxAddress,
 		uint _underlyingTokenId,
 		uint256 _erc20Supply, 
 		string _erc20Name, 
@@ -74,6 +76,7 @@ contract AssetTokenizationContract is TokenizeCore, Ownable{
 	{
 		tokenizeCore == msg.sender;
 		paymentAddress = _paymentAddress;
+		taxAddress = _taxAddress;
 		minimumShares = _minimumShares;
 		contractUnderlyingToken.underlyingTokenAddress = _underlyingTokenAddress;
 		contractUnderlyingToken.underlyingTokenId = _underlyingTokenId;
@@ -81,12 +84,17 @@ contract AssetTokenizationContract is TokenizeCore, Ownable{
 		name = _erc20Name;
 		symbol = _erc20Symbol;
 		decimals = _erc20Decimals;
-		_distributionAddress.onReceipt(_deploymentData);
+		balances[_distributionAddress] = _erc20Supply;
+		distributeInitially(address(this),_distributionAddress, _deploymentData);
 		// set distribution address
 		distributionAddress = _distributionAddress;
-		balances[_distributionAddress] = _erc20Supply;
 	}
 
+	function distributeInitially(address _ERC20TokenAddress, address _distributionAddress, bytes memory _deploymentData){
+		require(distributionFlag == 0);
+		_distributionAddress.onReceipt(_ERC20TokenAddress, totalSupply, _deploymentData);
+		distributionFlag++;
+	}
 
 	function transfer(address _to, uint256 _value) returns (bool success) {
         // makes sure that once the underlying asset is unlocked, the tokens are destroyed
@@ -102,13 +110,53 @@ contract AssetTokenizationContract is TokenizeCore, Ownable{
     }
 
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
+    	//todo offer a version of this function where recipient can change their duration/value within the function call
+    	// will be same params + uint _userDuration, uint _userValue; these will be set before determining escrow price
+    	//make sure once the erc721 token is unlocked, tokens are destroyed
     	require (_from != underlyingToken);
+    	//if there's a minimumShares, make sure it's enforced by both sender and receiver after the tx
     	require (balances[_to] + _value >= minimumShares && (balances[_from] - _value >= minimumShares || balances[_from] - _value == 0));
+        //make sure recipient has harbinger tax value and duration set
         require (harbingerSetByUser[_to].initialized == true || _to == underlyingToken);
-        require (paymentAddress.transferFrom(_to, _from, (harbingerSetByUser[_from].userValue*_value) || msg.sender == address(this), "Unable to make payment");
-        paymentAddress.transferFrom(_to, address(this), (harbingerSetByUser.userValue * harbingerSetByUser.userDuration * _value));
-        debtByUser[_to] = taxBreakdownByUser[_to].userDebt + harbingerSetByUser.userValue * harbingerSetByUser.userDuration * _value);
-        require (paymentAddress.transferFrom())
+        
+        // unless it's initial distribution, let's make sure we pay the _from when we're taking their shares
+        // _to should send _from (how much _from values each share) * (number of shares being taken)
+        if (msg.sender != address(this) && msg.sender != distributionAddress){
+        	require (paymentAddress.transferFrom(_to, _from, (harbingerSetByUser[_from].userValue * _value)));
+        }
+
+        //but they've still gotta pay taxes on any previously held tokens!
+        uint memory _senderDebt;
+        _senderDebt = (now - harbingerSetByUser[_from].userStartTime) * harbingerSetByUser[_from].userValue * taxRate * (_value/balances[_from]); 
+        //toconsider - instead of paying out the taxes, consider adding them to a state variable and paying it all out at once; 
+        //changes the economics of it though, so need to think through this
+        paymentAddress.transferFrom(address(this), taxAddress, _senderDebt);
+
+        //now, whoever is having shares taken from them needs to be reimbursed whatever's untaxed from their original escrow
+        uint memory _senderReimbursement;
+        _senderReimbursement = (harbingerSetByUser[_from].userStartTime + harbingerSetByUser[_from].userDuration - now) * harbingerSetByUser[_from].userValue * taxRate * (_value/balances[_from]);
+        paymentAddress.transferFrom((address(this), _from, _senderReimbursement));
+
+        //let's clear out the recipient's escrow as well, so we can reset their userStartTime and make them a new escrow
+        if (escrowedByUser[_to] > 0){
+
+        	uint memory _recipientDebt;
+        	_recipientDebt = (now - harbingerSetByUser[_to].userStartTime) * harbingerSetByUser[_to].userValue * taxRate; 
+        	//toconsider - instead of paying out the taxes, consider adding them to a state variable and paying it all out at once; 
+        	//changes the economics of it though, so need to think through this
+        	paymentAddress.transferFrom(address(this), taxAddress, _recipientDebt);
+
+
+        	uint memory _recipientReimbursement;
+        	_recipientReimbursement = (harbingerSetByUser[_to].userStartTime + harbingerSetByUser[_to].userDuration - now) * harbingerSetByUser[_to].userValue * taxRate;
+        	paymentAddress.transferFrom((address(this), _to, _recipientReimbursement));
+    	}
+
+        //recipient now needs to escrow, so one day they can pay taxes and get reimbursed and all that fun stuff
+        paymentAddress.transferFrom(_to, address(this), harbingerSetByUser[_to].userValue * harbingerSetByUser[_to].userDuration * _value);
+        escrowedByUser[_to] = harbingerSetByUser[_to].userValue * harbingerSetByUser[_to].userDuration * _value);
+		harbingerSetByUser[_to].userStartTime = now;
+        
         if (balances[_from] >= _value && _value > 0) {
             balances[_to] += _value;
             balances[_from] -= _value;
@@ -117,10 +165,14 @@ contract AssetTokenizationContract is TokenizeCore, Ownable{
         } else { return false; }
     }
 
-    //can be used if paymentAddress has approveAndCall
-    function allowAndTransferFrom(address _from, address _to, uint256 _value, bytes _extraData){
-
+    function getDebtByUser(address _user) public view returns(uint){
+    	return escrowedByUser[_user] - (harbingerSetByUser[_user].value * taxRate * balances[_user] * 
     }
+
+    //can be used if paymentAddress has approveAndCall
+    //function allowAndTransferFrom(address _from, address _to, uint256 _value, bytes _extraData){
+
+    //}
 
     function balanceOf(address _owner) constant returns (uint256 balance) {
         return balances[_owner];
@@ -162,6 +214,7 @@ contract AssetTokenizationContract is TokenizeCore, Ownable{
 		}
 		harbingerSetByUser[msg.sender].userValue = _userValue;
 		harbingerSetByUser[msg.sender].userDuration = _userDuration;
+		// set user start time
 	}
 
 	function unlockToken(){
