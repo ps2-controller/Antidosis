@@ -25,7 +25,7 @@ contract DeploymentCoreExample is Ownable{
 
 	function distribute(address _ERC20TokenAddress, uint _totalSupply) internal {
 		uint allocation = _totalSupply/(recipients.length);
-		//need to think about error handling for when harbinger is not set by recipients; transfer will fail
+		//need to think about error handling for when harberger is not set by recipients; transfer will fail
 		for(uint i = 0; i< recipients.length; i++){
 			_ERC20TokenAddress.transfer(recipients[i], allocation);
 		}

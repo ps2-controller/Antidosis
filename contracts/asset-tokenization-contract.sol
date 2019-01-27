@@ -17,7 +17,7 @@ import 'openzeppelin-solidity/contracts/ownership/Ownable.sol';
 //long term todo (nice-to-haves):
 //allow the option of using eth instead of wrapped eth for underlying value
 
-contract AssetTokenizationContract is TokenizeCore, Ownable{
+contract AssetTokenizationContract is TokenizeCore, Ownable {
 
 	//contract variables
 	//the ERC721 token locked to create the shares denominated in this ERC20 token
@@ -47,7 +47,7 @@ contract AssetTokenizationContract is TokenizeCore, Ownable{
 	}
 
 
-	struct HarbingerSet{
+	struct HarbergerSet{
 		// denominated in paymentAddress - i.e. .5 = .5 shares per Dai
 		uint userValue;
 		//duration in seconds
@@ -60,7 +60,7 @@ contract AssetTokenizationContract is TokenizeCore, Ownable{
 	//mappings
 	mapping (address => uint256) balances;
     mapping (address => mapping (address => uint256)) allowed;
-    mapping (address => HarbingerSet) harbingerSetByUser;
+    mapping (address => HarbergerSet) harbergerSetByUser;
     mapping (address => uint) escrowedByUser;
 
 	constructor (
@@ -102,7 +102,7 @@ contract AssetTokenizationContract is TokenizeCore, Ownable{
         // makes sure that once the underlying asset is unlocked, the tokens are destroyed
         require (msg.sender != tokenizeCore);
         require (balances[_to] + _value >= minimumShares && balances[msg.sender - _value >= minimumShares]);
-        require (harbingerSetByUser[_to].initialized == true);
+        require (harbergerSetByUser[_to].initialized == true);
         if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
@@ -123,46 +123,46 @@ contract AssetTokenizationContract is TokenizeCore, Ownable{
     	require (_from != contractUnderlyingToken);
     	//if there's a minimumShares, make sure it's enforced by both sender and receiver after the tx
     	require (balances[_to] + _value >= minimumShares && (balances[_from] - _value >= minimumShares || balances[_from] - _value == 0));
-        //make sure recipient has harbinger tax value and duration set
-        require (harbingerSetByUser[_to].initialized == true || _to == contractUnderlyingToken);
+        //make sure recipient has harbernger tax value and duration set
+        require (harbergerSetByUser[_to].initialized == true || _to == contractUnderlyingToken);
         
         // unless it's initial distribution, let's make sure we pay the _from when we're taking their shares
         // _to should send _from (how much _from values each share) * (number of shares being taken)
         if (msg.sender != address(this) && msg.sender != distributionAddress){
-        	require (paymentAddress.transferFrom(_to, _from, (harbingerSetByUser[_from].userValue * _value)));
+        	require (paymentAddress.transferFrom(_to, _from, (harbergerSetByUser[_from].userValue * _value)));
         }
 
         //but they've still gotta pay taxes on any previously held tokens!
         uint _senderDebt;
-        _senderDebt = (now - harbingerSetByUser[_from].userStartTime) * harbingerSetByUser[_from].userValue * taxRate * (_value/balances[_from]); 
+        _senderDebt = (now - harbergerSetByUser[_from].userStartTime) * harbergerSetByUser[_from].userValue * taxRate * (_value/balances[_from]); 
         //toconsider - instead of paying out the taxes, consider adding them to a state variable and paying it all out at once; 
         //changes the economics of it though, so need to think through this
         paymentAddress.transferFrom(address(this), taxAddress, _senderDebt);
 
         //now, whoever is having shares taken from them needs to be reimbursed whatever's untaxed from their original escrow
         uint _senderReimbursement;
-        _senderReimbursement = (harbingerSetByUser[_from].userStartTime + harbingerSetByUser[_from].userDuration - now) * harbingerSetByUser[_from].userValue * taxRate * (_value/balances[_from]);
+        _senderReimbursement = (harbergerSetByUser[_from].userStartTime + harbergerSetByUser[_from].userDuration - now) * harbergerSetByUser[_from].userValue * taxRate * (_value/balances[_from]);
         paymentAddress.transferFrom((address(this), _from, _senderReimbursement));
 
         //let's clear out the recipient's escrow as well, so we can reset their userStartTime and make them a new escrow
         if (escrowedByUser[_to] > 0){
 
         	uint _recipientDebt;
-        	_recipientDebt = (now - harbingerSetByUser[_to].userStartTime) * harbingerSetByUser[_to].userValue * taxRate; 
+        	_recipientDebt = (now - harbergerSetByUser[_to].userStartTime) * harbergerSetByUser[_to].userValue * taxRate; 
         	//toconsider - instead of paying out the taxes, consider adding them to a state variable and paying it all out at once; 
         	//changes the economics of it though, so need to think through this
         	paymentAddress.transferFrom(address(this), taxAddress, _recipientDebt);
 
 
         	uint _recipientReimbursement;
-        	_recipientReimbursement = (harbingerSetByUser[_to].userStartTime + harbingerSetByUser[_to].userDuration - now) * harbingerSetByUser[_to].userValue * taxRate;
+        	_recipientReimbursement = (harbergerSetByUser[_to].userStartTime + harbergerSetByUser[_to].userDuration - now) * harbergerSetByUser[_to].userValue * taxRate;
         	paymentAddress.transferFrom((address(this), _to, _recipientReimbursement));
     	}
 
         //recipient now needs to escrow, so one day they can pay taxes and get reimbursed and all that fun stuff
-        paymentAddress.transferFrom(_to, address(this), harbingerSetByUser[_to].userValue * harbingerSetByUser[_to].userDuration * _value);
-        escrowedByUser[_to] = harbingerSetByUser[_to].userValue * harbingerSetByUser[_to].userDuration * _value;
-		harbingerSetByUser[_to].userStartTime = now;
+        paymentAddress.transferFrom(_to, address(this), harbergerSetByUser[_to].userValue * harbergerSetByUser[_to].userDuration * _value);
+        escrowedByUser[_to] = harbergerSetByUser[_to].userValue * harbergerSetByUser[_to].userDuration * _value;
+		harbergerSetByUser[_to].userStartTime = now;
         
         if (balances[_from] >= _value && _value > 0) {
             balances[_to] += _value;
@@ -173,7 +173,7 @@ contract AssetTokenizationContract is TokenizeCore, Ownable{
     }
 
     //function getDebtByUser(address _user) public view returns(uint){
-    //	return escrowedByUser[_user] - (harbingerSetByUser[_user].value * taxRate * balances[_user] * 
+    //	return escrowedByUser[_user] - (harbergerSetByUser[_user].value * taxRate * balances[_user] * 
     //}
 
     //can be used if paymentAddress has approveAndCall
@@ -214,15 +214,15 @@ contract AssetTokenizationContract is TokenizeCore, Ownable{
         //return true;
     //}
 
-   	function setHarbinger (uint _userValue, uint _userDuration) public {
+   	function setHarberger (uint _userValue, uint _userDuration) public {
 		require (_userValue != 0);
 		require (_userDuration != 0);
 
-		if(harbingerSetByUser[msg.sender].initialized == false){
-			harbingerSetByUser[msg.sender].initialized == true;
+		if(harbergerSetByUser[msg.sender].initialized == false){
+			harbergerSetByUser[msg.sender].initialized == true;
 		}
-		harbingerSetByUser[msg.sender].userValue = _userValue;
-		harbingerSetByUser[msg.sender].userDuration = _userDuration;
+		harbergerSetByUser[msg.sender].userValue = _userValue;
+		harbergerSetByUser[msg.sender].userDuration = _userDuration;
 		// set user start time
 	}
 
