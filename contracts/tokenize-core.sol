@@ -21,14 +21,14 @@ contract TokenizeCore is ERC721Holder, Ownable {
 	mapping(address => TokenToLock) public ERC20ToToken;
 	mapping(bytes32 => address) tokenToERC20;
 
-	function onERC721Received(address _operator, address _from, uint256 _tokenId, bytes calldata _data) external returns(bytes4){
+	function onERC721Received(address _operator, address _from, uint256 _tokenId, bytes memory _data) public returns(bytes4){
 		(address _distributionAddress, 
 			address _paymentAddress,
 			address _taxAddress, 
 			uint256 _erc20Supply,
 			string memory _erc20Name, 
 			string memory _erc20Symbol, 
-			uint _erc20Decimals,
+			uint8 _erc20Decimals,
 			uint _minimumShares, 
 			bytes memory _deploymentData) = abi.decode(_data, (
 				address, 
@@ -37,7 +37,7 @@ contract TokenizeCore is ERC721Holder, Ownable {
 				uint256, 
 				string, 
 				string, 
-				uint, 
+				uint8, 
 				uint,
 				bytes));
 		require(lock721Token(_operator, _distributionAddress, _paymentAddress, _taxAddress, _tokenId, _erc20Supply, _erc20Name, _erc20Symbol, _erc20Decimals, _minimumShares, _deploymentData) == true);
@@ -53,7 +53,7 @@ contract TokenizeCore is ERC721Holder, Ownable {
 		uint256 _erc20Supply, 
 		string memory _erc20Name, 
 		string memory _erc20Symbol, 
-		uint _erc20Decimals,
+		uint8 _erc20Decimals,
 		uint _minimumShares,   
 		bytes memory _deploymentData) private returns(bool)
 	{
@@ -62,19 +62,19 @@ contract TokenizeCore is ERC721Holder, Ownable {
 		AssetTokenizationContract newAssetTokenizationContract = new AssetTokenizationContract(_tokenToLockAddress, _distributionAddress, _paymentAddress, _taxAddress, _tokenToLockId, _erc20Supply, _erc20Name, _erc20Symbol, _erc20Decimals, _minimumShares, _deploymentData);
 		ERC20ToToken[address(newAssetTokenizationContract)] = _tokenToLock;
 
-		bytes32 _tokenToLockHash = abi.encode(keccak256(_tokenToLockAddress, _tokenToLockId));
+		bytes32 _tokenToLockHash = keccak256(abi.encode(_tokenToLockAddress, _tokenToLockId));
 		tokenToERC20[_tokenToLockHash] = address(newAssetTokenizationContract);
 		return true;
 	}
 
 	function getERC20Address(address _tokenToLockAddress, uint _tokenToLockId) public view returns(address){
-		bytes32 _tokenToLockHash = abi.encode(keccak256(_tokenToLockAddress, _tokenToLockId));
+		bytes32 _tokenToLockHash = keccak256(abi.encode(_tokenToLockAddress, _tokenToLockId));
 		return tokenToERC20[_tokenToLockHash];
 	}
 
 
 	function unlockToken  (address _tokenToUnlockAddress, uint _tokenToUnlockId, address _claimant) public {
-		require (msg.sender == tokenToERC20[abi.encode(keccak256(_tokenToUnlockAddress, _tokenToUnlockId))]);
+		require (msg.sender == tokenToERC20[keccak256(abi.encode(_tokenToUnlockAddress, _tokenToUnlockId))]);
 		ERC721 instanceERC721 = ERC721(_tokenToUnlockAddress);
 		instanceERC721.safeTransferFrom(address(this), _claimant, _tokenToUnlockId);
 	}

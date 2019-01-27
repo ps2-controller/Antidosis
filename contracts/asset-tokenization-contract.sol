@@ -2,6 +2,7 @@ pragma solidity ^0.5.0;
 import 'openzeppelin-solidity/contracts/token/ERC20/ERC20.sol';
 import 'openzeppelin-solidity/contracts/ownership/Ownable.sol';
 import "./deployment-core.sol";
+import "./tokenize-core.sol";
 
 //todo:
 //add eip 161 support
@@ -72,7 +73,7 @@ contract AssetTokenizationContract is Ownable {
 		uint256 _erc20Supply, 
 		string memory _erc20Name, 
 		string memory _erc20Symbol, 
-		uint _erc20Decimals,
+		uint8 _erc20Decimals,
 		uint _minimumShares,  
 		bytes memory _deploymentData) public
 	{
@@ -102,7 +103,7 @@ contract AssetTokenizationContract is Ownable {
 	function transfer(address _to, uint256 _value) public returns (bool success) {
         // makes sure that once the underlying asset is unlocked, the tokens are destroyed
         require (msg.sender != tokenizeCore);
-        require (balances[_to] + _value >= minimumShares && balances[msg.sender - _value >= minimumShares]);
+        require (balances[_to] + _value >= minimumShares && balances[msg.sender] - _value >= minimumShares);
         require (harbergerSetByUser[_to].initialized == true);
         if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
@@ -121,16 +122,17 @@ contract AssetTokenizationContract is Ownable {
     	//todo offer a version of this function where recipient can change their duration/value within the function call
     	// will be same params + uint _userDuration, uint _userValue; these will be set before determining escrow price
     	//make sure once the erc721 token is unlocked, tokens are destroyed
-    	require (_from != contractUnderlyingToken);
+    	require (_from != contractUnderlyingToken.underlyingTokenAddress);
     	//if there's a minimumShares, make sure it's enforced by both sender and receiver after the tx
     	require (balances[_to] + _value >= minimumShares && (balances[_from] - _value >= minimumShares || balances[_from] - _value == 0));
         //make sure recipient has harbernger tax value and duration set
-        require (harbergerSetByUser[_to].initialized == true || _to == contractUnderlyingToken);
+        require (harbergerSetByUser[_to].initialized == true || _to == contractUnderlyingToken.underlyingTokenAddress);
+        ERC20 paymentAddressInstance = ERC20(paymentAddress);
         
         // unless it's initial distribution, let's make sure we pay the _from when we're taking their shares
         // _to should send _from (how much _from values each share) * (number of shares being taken)
         if (msg.sender != address(this) && msg.sender != distributionAddress){
-        	require (paymentAddress.transferFrom(_to, _from, (harbergerSetByUser[_from].userValue * _value)));
+        	require (paymentAddressInstance.transferFrom(_to, _from, (harbergerSetByUser[_from].userValue * _value)));
         }
 
         //but they've still gotta pay taxes on any previously held tokens!
@@ -138,12 +140,12 @@ contract AssetTokenizationContract is Ownable {
         _senderDebt = (now - harbergerSetByUser[_from].userStartTime) * harbergerSetByUser[_from].userValue * taxRate * (_value/balances[_from]); 
         //toconsider - instead of paying out the taxes, consider adding them to a state variable and paying it all out at once; 
         //changes the economics of it though, so need to think through this
-        paymentAddress.transferFrom(address(this), taxAddress, _senderDebt);
+        paymentAddressInstance.transferFrom(address(this), taxAddress, _senderDebt);
 
         //now, whoever is having shares taken from them needs to be reimbursed whatever's untaxed from their original escrow
         uint _senderReimbursement;
         _senderReimbursement = (harbergerSetByUser[_from].userStartTime + harbergerSetByUser[_from].userDuration - now) * harbergerSetByUser[_from].userValue * taxRate * (_value/balances[_from]);
-        paymentAddress.transferFrom((address(this), _from, _senderReimbursement));
+        paymentAddressInstance.transferFrom(address(this), _from, _senderReimbursement);
 
         //let's clear out the recipient's escrow as well, so we can reset their userStartTime and make them a new escrow
         if (escrowedByUser[_to] > 0){
@@ -152,16 +154,16 @@ contract AssetTokenizationContract is Ownable {
         	_recipientDebt = (now - harbergerSetByUser[_to].userStartTime) * harbergerSetByUser[_to].userValue * taxRate; 
         	//toconsider - instead of paying out the taxes, consider adding them to a state variable and paying it all out at once; 
         	//changes the economics of it though, so need to think through this
-        	paymentAddress.transferFrom(address(this), taxAddress, _recipientDebt);
+        	paymentAddressInstance.transferFrom(address(this), taxAddress, _recipientDebt);
 
 
         	uint _recipientReimbursement;
         	_recipientReimbursement = (harbergerSetByUser[_to].userStartTime + harbergerSetByUser[_to].userDuration - now) * harbergerSetByUser[_to].userValue * taxRate;
-        	paymentAddress.transferFrom((address(this), _to, _recipientReimbursement));
+        	paymentAddressInstance.transferFrom(address(this), _to, _recipientReimbursement);
     	}
 
         //recipient now needs to escrow, so one day they can pay taxes and get reimbursed and all that fun stuff
-        paymentAddress.transferFrom(_to, address(this), harbergerSetByUser[_to].userValue * harbergerSetByUser[_to].userDuration * _value);
+        paymentAddressInstance.transferFrom(_to, address(this), harbergerSetByUser[_to].userValue * harbergerSetByUser[_to].userDuration * _value);
         escrowedByUser[_to] = harbergerSetByUser[_to].userValue * harbergerSetByUser[_to].userDuration * _value;
 		harbergerSetByUser[_to].userStartTime = now;
         
@@ -182,7 +184,7 @@ contract AssetTokenizationContract is Ownable {
 
     //}
 
-    function balanceOf(address _owner) pure public returns (uint256 balance) {
+    function balanceOf(address _owner) view public returns (uint256 balance) {
         return balances[_owner];
     }
 
@@ -194,14 +196,14 @@ contract AssetTokenizationContract is Ownable {
 
 
 
-    function allowance(address _owner, address _spender) pure public returns (uint256 remaining) {
+    function allowance(address _owner, address _spender) view public returns (uint256 remaining) {
       	return allowed[_owner][_spender];
     }
 
 
     function () external {
     //if ether is sent to this address, send it back.
-    revert;
+  
     }
 
     //function approveAndCall(address _spender, uint256 _value, bytes memory _extraData) public returns (bool success) {
@@ -230,7 +232,8 @@ contract AssetTokenizationContract is Ownable {
 	function unlockToken() public {
 		require (balances[msg.sender] == totalSupply);
 		transferFrom(msg.sender, tokenizeCore, totalSupply);
-		tokenizeCore.unlockToken(UnderlyingToken.underlyingTokenAddress, UnderlyingToken.underlyingTokenId, msg.sender);
+		TokenizeCore instanceTokenizeCore = TokenizeCore(tokenizeCore);
+		instanceTokenizeCore.unlockToken(contractUnderlyingToken.underlyingTokenAddress, contractUnderlyingToken.underlyingTokenId, msg.sender);
 	}
 
 }
