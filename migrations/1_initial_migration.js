@@ -7,3 +7,4 @@ module.exports = function(deployer) {
   deployer.deploy(DeploymentCoreExample);
   deployer.deploy(TokenizeCore);
 };
+ 
