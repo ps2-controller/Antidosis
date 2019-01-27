@@ -1,9 +1,13 @@
 pragma solidity ^0.5.0;
 import 'openzeppelin-solidity/contracts/token/ERC721/ERC721Holder.sol';
+import 'openzeppelin-solidity/contracts/token/ERC721/IERC721Receiver.sol';
 import "./asset-tokenization-contract.sol";
+import 'openzeppelin-solidity/contracts/ownership/Ownable.sol';
+import 'openzeppelin-solidity/contracts/token/ERC721/ERC721.sol';
 
 
-contract TokenizeCore is ERC721Holder {
+
+contract TokenizeCore is ERC721Holder, Ownable {
 
 	//state variables
 	TokenToLock[] locked721Tokens;
@@ -58,11 +62,10 @@ contract TokenizeCore is ERC721Holder {
 		AssetTokenizationContract newAssetTokenizationContract = new AssetTokenizationContract(_tokenToLockAddress, _distributionAddress, _paymentAddress, _taxAddress, _tokenToLockId, _erc20Supply, _erc20Name, _erc20Symbol, _erc20Decimals, _minimumShares, _deploymentData);
 		ERC20ToToken[address(newAssetTokenizationContract)] = _tokenToLock;
 
-		bytes32 _tokenToLockHash = abi.encode(keccak256(addressToString(_tokenToLockAddress), _tokenToLockId));
+		bytes32 _tokenToLockHash = abi.encode(keccak256(_tokenToLockAddress, _tokenToLockId));
 		tokenToERC20[_tokenToLockHash] = address(newAssetTokenizationContract);
 		return true;
 	}
-
 
 	function getERC20Address(address _tokenToLockAddress, uint _tokenToLockId) public view returns(address){
 		bytes32 _tokenToLockHash = abi.encode(keccak256(_tokenToLockAddress, _tokenToLockId));
@@ -71,22 +74,9 @@ contract TokenizeCore is ERC721Holder {
 
 
 	function unlockToken  (address _tokenToUnlockAddress, uint _tokenToUnlockId, address _claimant) public {
-		require (msg.sender == tokenToERC20[abi.encode(keccak256(addressToString(_tokenToUnlockAddress), _tokenToUnlockId))]);
-		_tokenToUnlockAddress.safeTransferFrom(address(this), _claimant, _tokenToUnlockId);
+		require (msg.sender == tokenToERC20[abi.encode(keccak256(_tokenToUnlockAddress, _tokenToUnlockId))]);
+		ERC721 instanceERC721 = ERC721(_tokenToUnlockAddress);
+		instanceERC721.safeTransferFrom(address(this), _claimant, _tokenToUnlockId);
 	}
-
-	function addressToString(address _addr) public pure returns(string memory ) {
-    bytes32 value = bytes32(uint256(_addr));
-    bytes memory alphabet = "0123456789abcdef";
-
-    bytes memory str = new bytes(42);
-    str[0] = '0';
-    str[1] = 'x';
-    for (uint i = 0; i < 20; i++) {
-        str[2+i*2] = alphabet[uint(value[i + 12] >> 4)];
-        str[3+i*2] = alphabet[uint(value[i + 12] & 0x0f)];
-    }
-    return string(str);
-}
 
 }

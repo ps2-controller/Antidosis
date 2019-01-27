@@ -1,7 +1,7 @@
 pragma solidity ^0.5.0;
 import 'openzeppelin-solidity/contracts/token/ERC20/ERC20.sol';
-import "./tokenize-core.sol";
 import 'openzeppelin-solidity/contracts/ownership/Ownable.sol';
+import "./deployment-core.sol";
 
 //todo:
 //add eip 161 support
@@ -17,7 +17,7 @@ import 'openzeppelin-solidity/contracts/ownership/Ownable.sol';
 //long term todo (nice-to-haves):
 //allow the option of using eth instead of wrapped eth for underlying value
 
-contract AssetTokenizationContract is TokenizeCore, Ownable {
+contract AssetTokenizationContract is Ownable {
 
 	//contract variables
 	//the ERC721 token locked to create the shares denominated in this ERC20 token
@@ -94,7 +94,8 @@ contract AssetTokenizationContract is TokenizeCore, Ownable {
 
 	function distributeInitially (address _ERC20TokenAddress, address _distributionAddress, bytes memory _deploymentData) internal {
 		require(distributionFlag == 0);
-		_distributionAddress.onReceipt(_ERC20TokenAddress, totalSupply, _deploymentData);
+		DeploymentCore instanceDeploymentCore = DeploymentCore(_distributionAddress);
+		instanceDeploymentCore.onReceipt(_ERC20TokenAddress, totalSupply, _deploymentData);
 		distributionFlag++;
 	}
 
