@@ -66,39 +66,42 @@ contract AssetTokenizationContract is Ownable {
 
 	constructor (
 		address _underlyingTokenAddress, 
-		address _distributionAddress,
-		address _paymentAddress,
-		address _taxAddress,
-		uint _underlyingTokenId,
-		uint256 _erc20Supply, 
-		string memory _erc20Name, 
-		string memory _erc20Symbol, 
-		uint8 _erc20Decimals,
-		uint _minimumShares,  
-		bytes memory _deploymentData) public
+		uint _underlyingTokenId) public
 	{
 		tokenizeCore = msg.sender;
-		paymentAddress = _paymentAddress;
-		taxAddress = _taxAddress;
-		minimumShares = _minimumShares;
 		contractUnderlyingToken.underlyingTokenAddress = _underlyingTokenAddress;
 		contractUnderlyingToken.underlyingTokenId = _underlyingTokenId;
-		totalSupply = _erc20Supply;
+
+	}
+
+	function setERC20(string memory _erc20Name, string memory _erc20Symbol, uint8 _erc20Decimals) public {
 		name = _erc20Name;
 		symbol = _erc20Symbol;
 		decimals = _erc20Decimals;
-		balances[_distributionAddress] = _erc20Supply;
-		distributeInitially(address(this),_distributionAddress, _deploymentData);
-		// set distribution address
-		distributionAddress = _distributionAddress;
 	}
 
-	function distributeInitially (address _ERC20TokenAddress, address _distributionAddress, bytes memory _deploymentData) internal {
+	function setMainInfo(address _paymentAddress, address _taxAddress, uint _minimumShares) public {
+
+		paymentAddress = _paymentAddress;
+		taxAddress = _taxAddress;
+		minimumShares = _minimumShares;
+	}
+
+	function setDistributionInfo(address _distributionAddress, uint256 _erc20Supply, bytes memory _deploymentData) public {
 		require(distributionFlag == 0);
+		totalSupply = _erc20Supply;
+		balances[_distributionAddress] = _erc20Supply;
+		// set distribution address
+		distributionAddress = _distributionAddress;
+		//distribute initially
 		DeploymentCore instanceDeploymentCore = DeploymentCore(_distributionAddress);
-		instanceDeploymentCore.onReceipt(_ERC20TokenAddress, totalSupply, _deploymentData);
+		instanceDeploymentCore.onReceipt(address(this), totalSupply, _deploymentData);
 		distributionFlag++;
 	}
+
+	//function setUnderlying()
+
+
 
 	function transfer(address _to, uint256 _value) public returns (bool success) {
         // makes sure that once the underlying asset is unlocked, the tokens are destroyed

@@ -22,49 +22,47 @@ contract TokenizeCore is ERC721Holder, Ownable {
 	mapping(bytes32 => address) tokenToERC20;
 
 	function onERC721Received(address _operator, address _from, uint256 _tokenId, bytes memory _data) public returns(bytes4){
-		(address _distributionAddress, 
-			address _paymentAddress,
-			address _taxAddress, 
+		(address[3] memory addressesToUse, 
 			uint256 _erc20Supply,
 			string memory _erc20Name, 
 			string memory _erc20Symbol, 
 			uint8 _erc20Decimals,
 			uint _minimumShares, 
 			bytes memory _deploymentData) = abi.decode(_data, (
-				address, 
-				address,
-				address, 
+				address[3], 
 				uint256, 
 				string, 
 				string, 
 				uint8, 
 				uint,
 				bytes));
-		require(lock721Token(_operator, _distributionAddress, _paymentAddress, _taxAddress, _tokenId, _erc20Supply, _erc20Name, _erc20Symbol, _erc20Decimals, _minimumShares, _deploymentData) == true);
+		(bool a, address b) = lock721Token(_operator, _tokenId);
+		require(a == true);
+		//set ERC20 variables
+			address _distributionAddress = addressesToUse[0];
+			address _paymentAddress = addressesToUse[1];
+			address _taxAddress = addressesToUse[2];
+		AssetTokenizationContract instanceAssetTokenizationContract = AssetTokenizationContract(b);
+		instanceAssetTokenizationContract.setERC20( _erc20Name, _erc20Symbol, _erc20Decimals);
+		instanceAssetTokenizationContract.setMainInfo(_paymentAddress, _taxAddress, _minimumShares);
+		instanceAssetTokenizationContract.setDistributionInfo(_distributionAddress, _erc20Supply, _deploymentData);
+
 		return bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"));
 	}
 
 	function lock721Token (
 		address _tokenToLockAddress, 
-		address _distributionAddress, 
-		address _paymentAddress,
-		address _taxAddress,
-		uint256 _tokenToLockId, 
-		uint256 _erc20Supply, 
-		string memory _erc20Name, 
-		string memory _erc20Symbol, 
-		uint8 _erc20Decimals,
-		uint _minimumShares,   
-		bytes memory _deploymentData) private returns(bool)
+		uint256 _tokenToLockId) private returns(bool, address)
 	{
 		TokenToLock memory _tokenToLock = TokenToLock(_tokenToLockAddress, _tokenToLockId);
 		locked721Tokens.push(_tokenToLock); //need to think about if this will cause space issues
-		AssetTokenizationContract newAssetTokenizationContract = new AssetTokenizationContract(_tokenToLockAddress, _distributionAddress, _paymentAddress, _taxAddress, _tokenToLockId, _erc20Supply, _erc20Name, _erc20Symbol, _erc20Decimals, _minimumShares, _deploymentData);
-		ERC20ToToken[address(newAssetTokenizationContract)] = _tokenToLock;
+		//deploy asset tokenization contract
+		AssetTokenizationContract newAssetTokenizationContract = new AssetTokenizationContract(_tokenToLockAddress, _tokenToLockId);
 
+		ERC20ToToken[address(newAssetTokenizationContract)] = _tokenToLock;
 		bytes32 _tokenToLockHash = keccak256(abi.encode(_tokenToLockAddress, _tokenToLockId));
 		tokenToERC20[_tokenToLockHash] = address(newAssetTokenizationContract);
-		return true;
+		return (true, address(newAssetTokenizationContract));
 	}
 
 	function getERC20Address(address _tokenToLockAddress, uint _tokenToLockId) public view returns(address){
