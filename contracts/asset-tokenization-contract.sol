@@ -80,7 +80,7 @@ contract AssetTokenizationContract is Ownable {
 		decimals = _erc20Decimals;
 	}
 
-	function setMainInfo(address _paymentAddress, address _taxAddress, uint _minimumShares) public {
+	function setMainInfo(address _paymentAddress, address _taxAddress, uint256 _minimumShares, uint256 _taxRate) public {
 
 		paymentAddress = _paymentAddress;
 		taxAddress = _taxAddress;
@@ -106,36 +106,37 @@ contract AssetTokenizationContract is Ownable {
 	function transfer(address _to, uint256 _value) public returns (bool success) {
         // makes sure that once the underlying asset is unlocked, the tokens are destroyed
         require (msg.sender != tokenizeCore);
-        require (balances[_to] + _value >= minimumShares && balances[msg.sender] - _value >= minimumShares);
-        require (harbergerSetByUser[_to].initialized == true);
+        require (_value > 0);
+        require ((harbergerSetByUser[_to].initialized == true) || (_to == tokenizeCore));
+        require (balances[_to] + _value >= minimumShares && (balances[msg.sender] - _value >= minimumShares || balances[msg.sender] - _value == 0));
+
         if (balances[msg.sender] >= _value && _value > 0) {
-            balances[msg.sender] -= _value;
-            balances[_to] += _value;
-            Transfer(msg.sender, _to, _value);
+            doTransfer(msg.sender, _to, _value);
             return true;
         } else { return false; }
     }
 
-    function Transfer(address _from, address _to, uint256 _value) internal {
-    	balances[_from] -= _value;
-    	balances [_to] += _value;
-    }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
     	//todo offer a version of this function where recipient can change their duration/value within the function call
     	// will be same params + uint _userDuration, uint _userValue; these will be set before determining escrow price
     	//make sure once the erc721 token is unlocked, tokens are destroyed
-    	require (_from != contractUnderlyingToken.underlyingTokenAddress);
+    	require (_from != tokenizeCore);
+    	require (_value > 0);
+
+    	//make sure recipient has harberger tax value and duration set
+        require (harbergerSetByUser[_to].initialized == true || _to == tokenizeCore);
+
     	//if there's a minimumShares, make sure it's enforced by both sender and receiver after the tx
     	require (balances[_to] + _value >= minimumShares && (balances[_from] - _value >= minimumShares || balances[_from] - _value == 0));
-        //make sure recipient has harbernger tax value and duration set
-        require (harbergerSetByUser[_to].initialized == true || _to == contractUnderlyingToken.underlyingTokenAddress);
+
         ERC20 paymentAddressInstance = ERC20(paymentAddress);
         
         // unless it's initial distribution, let's make sure we pay the _from when we're taking their shares
         // _to should send _from (how much _from values each share) * (number of shares being taken)
+        //if you want this to be synchronous, call approveAndCall if implemented on the token contract, then call this function
         if (msg.sender != address(this) && msg.sender != distributionAddress){
-        	require (paymentAddressInstance.transferFrom(_to, _from, (harbergerSetByUser[_from].userValue * _value)));
+        	require (paymentAddressInstance.transferFrom(_to, _from, (harbergerSetByUser[_from].userValue * _value)), "Unable to pay token owner");
         }
 
         //but they've still gotta pay taxes on any previously held tokens!
@@ -171,11 +172,17 @@ contract AssetTokenizationContract is Ownable {
 		harbergerSetByUser[_to].userStartTime = now;
         
         if (balances[_from] >= _value && _value > 0) {
-            balances[_to] += _value;
-            balances[_from] -= _value;
-            Transfer(_from, _to, _value);
+            doTransfer(_from, _to, _value);
             return true;
         } else { return false; }
+    }
+
+    function doTransfer(address _from, address _to, uint256 _value) internal {
+    	require((_to != address(0)) && (_to != address(this)));
+    	require(_value <= balances[_from]);
+    	balances[_from] -= _value;
+    	balances [_to] += _value;
+    	emit Transfer(_from, _to, _value);
     }
 
     //function getDebtByUser(address _user) public view returns(uint){
@@ -191,16 +198,15 @@ contract AssetTokenizationContract is Ownable {
         return balances[_owner];
     }
 
-    // function approve(address _spender, uint256 _value) public returns (bool success) {
-       // allowed[msg.sender][_spender] = _value;
-       // Approval(msg.sender, _spender, _value);
-       // return true;
-    //}
+    // this is dumb... required bc of erc20
+	function approve(address _spender, uint256 _value) public returns (bool success){
+		return false;
+	}
 
 
 
     function allowance(address _owner, address _spender) view public returns (uint256 remaining) {
-      	return allowed[_owner][_spender];
+      	return 0;
     }
 
 
@@ -238,6 +244,13 @@ contract AssetTokenizationContract is Ownable {
 		TokenizeCore instanceTokenizeCore = TokenizeCore(tokenizeCore);
 		instanceTokenizeCore.unlockToken(contractUnderlyingToken.underlyingTokenAddress, contractUnderlyingToken.underlyingTokenId, msg.sender);
 	}
+
+
+    event Transfer(
+        address indexed _from,
+        address indexed _to,
+        uint256 _amount
+    );
 
 }
 

@@ -4,7 +4,7 @@ import 'openzeppelin-solidity/contracts/ownership/Ownable.sol';
 import 'openzeppelin-solidity/contracts/token/ERC20/ERC20.sol';
 
 interface DeploymentCoreInterface{
-	function onReceipt(bytes calldata _deploymentData) external returns (bytes4);
+	function onReceipt(address _ERC20TokenAddress, uint _totalSupply, bytes calldata _deploymentData) external returns (bytes4);
 }
 
 contract DeploymentCore is Ownable{

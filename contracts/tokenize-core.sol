@@ -27,14 +27,16 @@ contract TokenizeCore is ERC721Holder, Ownable {
 			string memory _erc20Name, 
 			string memory _erc20Symbol, 
 			uint8 _erc20Decimals,
-			uint _minimumShares, 
+			uint256 _minimumShares, 
+			uint256 _taxRate,
 			bytes memory _deploymentData) = abi.decode(_data, (
 				address[3], 
 				uint256, 
 				string, 
 				string, 
 				uint8, 
-				uint,
+				uint256,
+				uint256,
 				bytes));
 		(bool a, address b) = lock721Token(_operator, _tokenId);
 		require(a == true);
@@ -44,7 +46,7 @@ contract TokenizeCore is ERC721Holder, Ownable {
 			address _taxAddress = addressesToUse[2];
 		AssetTokenizationContract instanceAssetTokenizationContract = AssetTokenizationContract(b);
 		instanceAssetTokenizationContract.setERC20( _erc20Name, _erc20Symbol, _erc20Decimals);
-		instanceAssetTokenizationContract.setMainInfo(_paymentAddress, _taxAddress, _minimumShares);
+		instanceAssetTokenizationContract.setMainInfo(_paymentAddress, _taxAddress, _minimumShares, _taxRate);
 		instanceAssetTokenizationContract.setDistributionInfo(_distributionAddress, _erc20Supply, _deploymentData);
 
 		return bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"));
