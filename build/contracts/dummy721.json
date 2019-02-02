@@ -1415,12 +1415,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0xf2dc1fFAf2aa9dE2b33615d18fC5b00912d47333",
-      "transactionHash": "0x99fa3722531bd1bfca78789d813e4794de0655f37d3fdd4197dba0ea9b3fb6bb"
+      "address": "0x8639F5aa76FBeFdAA0eF6c737C30d0D3E7752328",
+      "transactionHash": "0x1dfc7590a8b5acef9f83a76f738375bb97859124495abe0eb3974188b93e71be"
     }
   },
   "schemaVersion": "3.0.0",
-  "updatedAt": "2019-02-02T15:34:48.025Z",
+  "updatedAt": "2019-02-02T19:06:48.487Z",
   "devdoc": {
     "methods": {
       "approve(address,uint256)": {

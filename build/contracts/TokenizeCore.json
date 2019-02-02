@@ -7755,12 +7755,12 @@
         }
       },
       "links": {},
-      "address": "0x9B521845838a5384f0F4030e1C06b453d1B08D1a",
-      "transactionHash": "0xde4fc6bfa5287b06aa76ab62cceaa6218ea0f425a3727cc8b52fc5e466c29795"
+      "address": "0x103E0b7e02bAFeFC1625153e9f4dB733825e0Dd9",
+      "transactionHash": "0xf9011f664f02746274f4b60721acd56fd58c159c356d4c5ba2468dbb8477a8a3"
     }
   },
   "schemaVersion": "3.0.0",
-  "updatedAt": "2019-02-02T15:34:48.038Z",
+  "updatedAt": "2019-02-02T19:06:48.499Z",
   "devdoc": {
     "methods": {
       "isOwner()": {
