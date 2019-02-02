@@ -1,0 +1,7 @@
+DeploymentCore:
+tx hash: 0xb3c0e3197d16802cab70618f9b8a046a5a76cb46f67e0ece85059222e3cf6b79
+contract: 0x917Df5327f14024a5e7bE456cA5444DF99C45e11
+
+TokenizeCore:
+tx hash: 0x6d0af4801643ae2ac59a5fe1b8b8e00895c60ab44d1ab4c6765b2eb98dcacd68
+contract: 0x9187427bBFF081822C7777ebd990640cc64a68F1

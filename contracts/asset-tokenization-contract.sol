@@ -85,6 +85,7 @@ contract AssetTokenizationContract is Ownable {
 		paymentAddress = _paymentAddress;
 		taxAddress = _taxAddress;
 		minimumShares = _minimumShares;
+		taxRate = _taxRate;
 	}
 
 	function setDistributionInfo(address _distributionAddress, uint256 _erc20Supply, bytes memory _deploymentData) public {
@@ -198,15 +199,22 @@ contract AssetTokenizationContract is Ownable {
         return balances[_owner];
     }
 
-    // this is dumb... required bc of erc20
-	function approve(address _spender, uint256 _value) public returns (bool success){
-		return false;
-	}
+    // required bc of erc20
+    function approve(address _spender, uint256 _amount) public returns (bool success) {
+        // To change the approve amount you first have to reduce the addresses`
+        //  allowance to zero by calling `approve(_spender,0)` if it is not
+        //  already 0 to mitigate the race condition described here:
+        //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
+        require((_amount == 0) || (allowed[msg.sender][_spender] == 0));
+
+        allowed[msg.sender][_spender] = _amount;
+        emit Approval(msg.sender, _spender, _amount);
+        return true;
+    }
 
 
-
-    function allowance(address _owner, address _spender) view public returns (uint256 remaining) {
-      	return 0;
+    function allowance(address _owner, address _spender) public view returns (uint256 remaining) {
+        return allowed[_owner][_spender];
     }
 
 
@@ -250,6 +258,12 @@ contract AssetTokenizationContract is Ownable {
         address indexed _from,
         address indexed _to,
         uint256 _amount
+    );
+
+    event Approval(
+    address indexed _owner,
+    address indexed _spender,
+    uint256 _amount
     );
 
 }
