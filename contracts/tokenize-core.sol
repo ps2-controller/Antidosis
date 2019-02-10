@@ -29,6 +29,7 @@ contract TokenizeCore is ERC721Holder, Ownable {
 			uint8 _erc20Decimals,
 			uint256 _minimumShares, 
 			uint256 _taxRate,
+			//not sure if I need deployment data; it's meant to handle any custom logic needed for deployment, but may not be needed - keeping for now
 			bytes memory _deploymentData) = abi.decode(_data, (
 				address[3], 
 				uint256, 
@@ -38,11 +39,15 @@ contract TokenizeCore is ERC721Holder, Ownable {
 				uint256,
 				uint256,
 				bytes));
+		//deploys new asset tokenization contract for the contributed token
 		(bool a, address b) = lock721Token(msg.sender, _tokenId);
 		require(a == true);
 		//set ERC20 variables
+			// address that handles logic for initial distribution of ERC20 tokens
 			address _distributionAddress = addressesToUse[0];
+			// ERC20 contract address that denominates what payments/taxes are paid in (DAI contract address by default)
 			address _paymentAddress = addressesToUse[1];
+			// address of the recipient of all tax payments for this token
 			address _taxAddress = addressesToUse[2];
 		AssetTokenizationContract instanceAssetTokenizationContract = AssetTokenizationContract(b);
 		instanceAssetTokenizationContract.setERC20( _erc20Name, _erc20Symbol, _erc20Decimals);
