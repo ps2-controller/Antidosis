@@ -38,7 +38,7 @@ contract TokenizeCore is ERC721Holder, Ownable {
 				uint256,
 				uint256,
 				bytes));
-		(bool a, address b) = lock721Token(_operator, _tokenId);
+		(bool a, address b) = lock721Token(msg.sender, _tokenId);
 		require(a == true);
 		//set ERC20 variables
 			address _distributionAddress = addressesToUse[0];
