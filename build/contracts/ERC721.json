@@ -15375,12 +15375,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x47D55319361A50dF00d2012CB6Df9bD5Fb48579a",
-      "transactionHash": "0x133a6b1e946d4d82bdf7a704737095e02e0181b5147b978efb5a981defe60b80"
+      "address": "0x917Df5327f14024a5e7bE456cA5444DF99C45e11",
+      "transactionHash": "0x5a71c63bb3185e094d8fe37df0911db49f15586186c05500302d950fc66119a4"
     }
   },
   "schemaVersion": "3.0.0",
-  "updatedAt": "2019-02-02T19:06:48.510Z",
+  "updatedAt": "2019-02-03T00:28:42.508Z",
   "devdoc": {
     "details": "see https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md",
     "methods": {

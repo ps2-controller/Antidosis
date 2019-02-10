@@ -3165,12 +3165,12 @@
         }
       },
       "links": {},
-      "address": "0x289eF7Fbb566463197bDa8Dc3D22CF7cE407c44A",
-      "transactionHash": "0x0306f56dd6de7393ac1da2960cedb6107a3f2d93ac9e3842f1ebc0641e63d5c8"
+      "address": "0x5838a260Ef2A5ff931C8904C002F6FFC0d86AC91",
+      "transactionHash": "0x6c97c86a45706d2254e3e39e5946580c57a20caf7bef0df40d4071e767959240"
     }
   },
   "schemaVersion": "3.0.0",
-  "updatedAt": "2019-02-02T19:06:48.492Z",
+  "updatedAt": "2019-02-03T00:28:42.485Z",
   "devdoc": {
     "methods": {
       "isOwner()": {
