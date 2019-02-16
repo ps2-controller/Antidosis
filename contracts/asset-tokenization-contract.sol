@@ -3,6 +3,7 @@ import 'openzeppelin-solidity/contracts/token/ERC20/ERC20.sol';
 import 'openzeppelin-solidity/contracts/ownership/Ownable.sol';
 import "./deployment-core.sol";
 import "./tokenize-core.sol";
+import "./driver-core.sol";
 
 //todo:
 //add eip 161 support
@@ -40,6 +41,8 @@ contract AssetTokenizationContract is Ownable {
     uint defaultDuration = 0;
     uint minimumShares;
     uint distributionFlag = 0;
+
+    ERC20 paymentAddressInstance = ERC20(paymentAddress);
     
 
     //structs
@@ -76,18 +79,18 @@ contract AssetTokenizationContract is Ownable {
 
     }
 
-    modifier tokenizeCore{
+    modifier tokenizeCoreOnly{
         require(msg.sender == tokenizeCore);
         _;
     }
 
-    function setERC20(string memory _erc20Name, string memory _erc20Symbol, uint8 _erc20Decimals) public tokenizeCore {
+    function setERC20(string memory _erc20Name, string memory _erc20Symbol, uint8 _erc20Decimals) public tokenizeCoreOnly {
         name = _erc20Name;
         symbol = _erc20Symbol;
         decimals = _erc20Decimals;
     }
 
-    function setMainInfo(address _paymentAddress, address _taxAddress, uint256 _minimumShares, uint256 _taxRate) public tokenizeCore {
+    function setMainInfo(address _paymentAddress, address _taxAddress, uint256 _minimumShares, uint256 _taxRate) public tokenizeCoreOnly {
 
         paymentAddress = _paymentAddress;
         taxAddress = _taxAddress;
@@ -95,14 +98,14 @@ contract AssetTokenizationContract is Ownable {
         taxRate = _taxRate;
     }
 
-    function setDistributionInfo(address _distributionAddress, uint256 _erc20Supply, bytes memory _deploymentData) public tokenizeCore {
+    function setDistributionInfo(address _distributionAddress, uint256 _erc20Supply, bytes memory _deploymentData) public tokenizeCoreOnly {
         require(distributionFlag == 0);
         totalSupply = _erc20Supply;
         balances[_distributionAddress] = _erc20Supply;
         // set distribution address
         distributionAddress = _distributionAddress;
         //distribute initially
-        DeploymentCore instanceDeploymentCore = DeploymentCore(_distributionAddress);
+        DeploymentCoreInterface instanceDeploymentCore = DeploymentCoreInterface(_distributionAddress);
         instanceDeploymentCore.onReceipt(address(this), totalSupply, _deploymentData);
         distributionFlag++;
     }
@@ -137,7 +140,7 @@ contract AssetTokenizationContract is Ownable {
         //if there's a minimumShares, make sure it's enforced by both sender and receiver after the tx
         require (balances[_to] + _value >= minimumShares && (balances[_from] - _value >= minimumShares || balances[_from] - _value == 0));
 
-        ERC20 paymentAddressInstance = ERC20(paymentAddress);
+        
         
         // unless it's initial distribution, let's make sure we pay the _from when we're taking their shares
         // _to should send _from (how much _from values each share) * (number of shares being taken)
@@ -158,25 +161,25 @@ contract AssetTokenizationContract is Ownable {
         uint _senderReimbursement;
         _senderReimbursement = (harbergerSetByUser[_from].userStartTime + harbergerSetByUser[_from].userDuration - now) * harbergerSetByUser[_from].userValue * taxRate * escrowedByUser[_from] * (_value/balances[_from]);
         escrowedByUser[_from] -= _senderReimbursement;
-        accruedReimbursementByUser[_from] += _recipientReimbursement;
+        accruedReimbursementByUser[_from] += _senderReimbursement;
 
         //let's clear out the recipient's escrow as well, so we can reset their userStartTime and make them a new escrow
-            uint _recipientDebt;
-            _recipientDebt = (now - harbergerSetByUser[_to].userStartTime) * harbergerSetByUser[_to].userValue * taxRate; 
-            //toconsider - instead of paying out the taxes, consider adding them to a state variable and paying it all out at once; 
-            //changes the economics of it though, so need to think through this
-            paymentAddressInstance.transferFrom(address(this), taxAddress, _recipientDebt);
+        uint _recipientDebt;
+        _recipientDebt = (now - harbergerSetByUser[_to].userStartTime) * harbergerSetByUser[_to].userValue * taxRate; 
+        //toconsider - instead of paying out the taxes, consider adding them to a state variable and paying it all out at once; 
+        //changes the economics of it though, so need to think through this
+        paymentAddressInstance.transferFrom(address(this), taxAddress, _recipientDebt);
 
 
-            uint _recipientReimbursement;
-            _recipientReimbursement = (harbergerSetByUser[_to].userStartTime + harbergerSetByUser[_to].userDuration - now) * harbergerSetByUser[_to].userValue * taxRate;
-            escrowedByUser[_to] -= _recipientReimbursement;
-            accruedReimbursementByUser[_to] += _recipientReimbursement;
+        uint _recipientReimbursement;
+        _recipientReimbursement = (harbergerSetByUser[_to].userStartTime + harbergerSetByUser[_to].userDuration - now) * harbergerSetByUser[_to].userValue * taxRate;
+        escrowedByUser[_to] -= _recipientReimbursement;
+        accruedReimbursementByUser[_to] += _recipientReimbursement;
             
-        }
+        
 
         //recipient now needs to escrow, so one day they can pay taxes and get reimbursed and all that fun stuff
-        paymentAddressInstance.transferFrom(_to, address(this), harbergerSetByUser[_to].userValue * harbergerSetByUser[_to].userDuration * _value);
+        paymentAddressInstance.transferFrom(_to, address(this), (harbergerSetByUser[_to].userValue * harbergerSetByUser[_to].userDuration * _value));
         escrowedByUser[_to] = harbergerSetByUser[_to].userValue * harbergerSetByUser[_to].userDuration * _value;
         harbergerSetByUser[_to].userStartTime = now;
         
@@ -195,7 +198,7 @@ contract AssetTokenizationContract is Ownable {
     }
 
 
-    function withdrawReimbursement(amount){
+    function withdrawReimbursement(uint amount) public {
         require(accruedReimbursementByUser[msg.sender] >= amount);
         accruedReimbursementByUser[msg.sender] -= amount;
         paymentAddressInstance.transfer(msg.sender, amount);
@@ -206,8 +209,9 @@ contract AssetTokenizationContract is Ownable {
     mechanism governed by owners of this contract's erc20 tokens
     they can vote on decisions affecting the underlying 721
     */
-    function execute(bytes logic, address driver) public onlyOwner{
-        driver.executeCall(logic);
+    function execute(bytes memory _logic, address _driver) public onlyOwner{
+        DriverCoreInterface instanceDriverCore = DriverCoreInterface(_driver);
+        instanceDriverCore.executeCall(_logic);
     }
 
     //function getDebtByUser(address _user) public view returns(uint){
