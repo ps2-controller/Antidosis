@@ -22,7 +22,9 @@
  *
  */
 
-// const HDWallet = require('truffle-hdwallet-provider');
+var HDWalletProvider = require("truffle-hdwallet-provider");
+
+var mnemonic = "comic zoo like adjust okay card bottom secret garage earn struggle moral";
 // const infuraKey = "fj4jll3k.....";
 //
 // const fs = require('fs');
@@ -52,11 +54,10 @@ module.exports = {
       network_id: "*",       // Any network (default: none)
     },
     rinkeby: {
-      host: "localhost", // Connect to geth on the specified
-      port: 8545,
-      from: "0x0085f8e72391Ce4BB5ce47541C846d059399fA6c", // default address to use for any transaction Truffle makes during migrations
-      network_id: 4,
-      gas: 4612388 // Gas limit used for deploys
+      provider: function() {
+        return new HDWalletProvider(mnemonic, "https://rinkeby.infura.io/v3/4faf52f5e97a401ea7a59c628d8fa02e");
+      },
+      network_id: 4
     }
 
     // Another network with more advanced options...

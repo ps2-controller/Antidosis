@@ -2,8 +2,8 @@ var Migrations = artifacts.require("./Migrations.sol");
 const ERC721 = artifacts.require("ERC721")
 const dummy721 = artifacts.require("dummy721");
 
-const DriverCoreInterface = artifacts.require("DriverCoreInterface");
-const DeploymentCoreInterface = artifacts.require("DeploymentCoreInterface");
+//const DriverCoreInterface = artifacts.require("DriverCoreInterface");
+//const DeploymentCoreInterface = artifacts.require("DeploymentCoreInterface");
 const TokenizeCore = artifacts.require("TokenizeCore");
 
 module.exports = function(deployer) {
@@ -11,8 +11,8 @@ module.exports = function(deployer) {
   deployer.deploy(ERC721);
   deployer.deploy(dummy721);
 
-  deployer.deploy(DriverCoreInterface);
-  deployer.deploy(DeploymentCoreInterface);
+  //deployer.deploy(DriverCoreInterface);
+  //deployer.deploy(DeploymentCoreInterface);
   deployer.deploy(TokenizeCore);
 };
  	

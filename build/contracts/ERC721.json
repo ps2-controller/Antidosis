@@ -15372,6 +15372,12 @@
     "version": "0.5.0+commit.1d4f565a.Emscripten.clang"
   },
   "networks": {
+    "4": {
+      "events": {},
+      "links": {},
+      "address": "0xA9cf395DF409D069479d78EE71640f7CeD461aCd",
+      "transactionHash": "0x4b28721e645655d6aecaf290fcc755f7f19bd237ef785e33f0f8d4728d5d4ea5"
+    },
     "5777": {
       "events": {},
       "links": {},
@@ -15380,7 +15386,7 @@
     }
   },
   "schemaVersion": "3.0.0",
-  "updatedAt": "2019-02-03T00:28:42.508Z",
+  "updatedAt": "2019-02-16T03:01:20.875Z",
   "devdoc": {
     "details": "see https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md",
     "methods": {
