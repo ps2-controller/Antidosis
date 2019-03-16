@@ -24,7 +24,7 @@
 
 var HDWalletProvider = require("truffle-hdwallet-provider");
 
-var mnemonic = "comic zoo like adjust okay card bottom secret garage earn struggle moral";
+var mnemonic = localMnemonic;
 // const infuraKey = "fj4jll3k.....";
 //
 // const fs = require('fs');
