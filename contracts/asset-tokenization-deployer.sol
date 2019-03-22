@@ -1,3 +1,12 @@
+
+//this is just an idea under consideration to make an asset-tokenization standard
+//and then allow for custom implementations of the asset-tokenization contract
+//mintable from tokenize-core. This will most likely be a v2 type of thing.
+//still thinking it through
+
+
+
+
 //pragma solidity ^0.5.0;
 //import 'openzeppelin-solidity/contracts/token/ERC20/ERC20.sol';
 //import "./asset-tokenization-contract.sol";

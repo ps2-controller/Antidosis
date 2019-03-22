@@ -2,18 +2,17 @@
 pragma solidity ^0.5.0;
 import 'openzeppelin-solidity/contracts/ownership/Ownable.sol';
 import 'openzeppelin-solidity/contracts/token/ERC20/ERC20.sol';
+import './deployment-core-interface.sol';
 
-interface DeploymentCoreInterface{
-	function onReceipt(address _ERC20TokenAddress, uint _totalSupply, bytes calldata _deploymentData) external returns (bytes4);
-}
 
-contract DeploymentCore is Ownable{
+
+contract DeploymentCoreExample is Ownable{
 
 
 	address[] public recipients;
 
-	function onReceipt(address _ERC20TokenAddress, uint _totalSupply, bytes memory _deploymentData) public returns (bytes4){
-		distribute(_ERC20TokenAddress, _totalSupply);
+	function onReceipt(uint _totalSupply, bytes memory _deploymentData) public returns (bytes4){
+		distribute(msg.sender, _totalSupply);
 
 		return bytes4(keccak256("onReceipt(address,uint,bytes)"));
 	}

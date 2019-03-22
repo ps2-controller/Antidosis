@@ -99,6 +99,8 @@ contract AssetTokenizationContract is Ownable {
     }
 
     function setDistributionInfo(address _distributionAddress, uint256 _erc20Supply, bytes memory _deploymentData) public tokenizeCoreOnly {
+        //Actually, I don't think distribution flag is needed since it's tokenizeCoreOnly; 
+        //will think more about this later
         require(distributionFlag == 0);
         totalSupply = _erc20Supply;
         balances[_distributionAddress] = _erc20Supply;
@@ -106,17 +108,34 @@ contract AssetTokenizationContract is Ownable {
         distributionAddress = _distributionAddress;
         //distribute initially
         DeploymentCoreInterface instanceDeploymentCore = DeploymentCoreInterface(_distributionAddress);
-        instanceDeploymentCore.onReceipt(address(this), totalSupply, _deploymentData);
-        distributionFlag++;
+            if(instanceDeploymentCore.onReceipt(totalSupply, _deploymentData) == true){
+                distributionFlag++;
+            }
+            else{
+                return "err: unable to distribute initial tokens";
+            }
+    }
+
+
+   function setHarberger (uint _userValue, uint _userDuration) public {
+        require (_userValue != 0);
+        require (_userDuration != 0);
+
+        if(harbergerSetByUser[msg.sender].initialized == false){
+        harbergerSetByUser[msg.sender].initialized == true;
+        }
+        harbergerSetByUser[msg.sender].userValue = _userValue;
+        harbergerSetByUser[msg.sender].userDuration = _userDuration;
+    // set user start time
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
         // makes sure that once the underlying asset is unlocked, the tokens are destroyed
         require (msg.sender != tokenizeCore);
-        require (_value > 0);
+        require (_value > 0, "value must be greater than 0");
         require ((harbergerSetByUser[_to].initialized == true) || (_to == tokenizeCore));
         require (balances[_to] + _value >= minimumShares && ((balances[msg.sender] - _value >= minimumShares) || balances[msg.sender] - _value == 0));
-        //TODO - need to add something that enforces that _to escrows their value*duration
+
 
         if (balances[msg.sender] >= _value && _value > 0) {
             doTransfer(msg.sender, _to, _value);
@@ -262,17 +281,6 @@ contract AssetTokenizationContract is Ownable {
         //return true;
     //}
 
-       function setHarberger (uint _userValue, uint _userDuration) public {
-        require (_userValue != 0);
-        require (_userDuration != 0);
-
-        if(harbergerSetByUser[msg.sender].initialized == false){
-            harbergerSetByUser[msg.sender].initialized == true;
-        }
-        harbergerSetByUser[msg.sender].userValue = _userValue;
-        harbergerSetByUser[msg.sender].userDuration = _userDuration;
-        // set user start time
-    }
 
     function unlockToken() public {
         require (balances[msg.sender] == totalSupply);
