@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/ps2-controller/tokenize-that#readme",
   "dependencies": {
+    "dotenv": "^7.0.0",
     "ethers": "^4.0.27",
     "openzeppelin-solidity": "2.1.2",
     "truffle-hdwallet-provider": "^1.0.4"

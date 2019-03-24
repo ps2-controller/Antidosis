@@ -1,7 +1,7 @@
 pragma solidity ^0.5.0;
 import 'openzeppelin-solidity/contracts/token/ERC20/ERC20.sol';
 import 'openzeppelin-solidity/contracts/ownership/Ownable.sol';
-import "./deployment-core.sol";
+import "./deployment-core-example.sol";
 import "./tokenize-core.sol";
 import "./driver-core.sol";
 
@@ -98,7 +98,7 @@ contract AssetTokenizationContract is Ownable {
         taxRate = _taxRate;
     }
 
-    function setDistributionInfo(address _distributionAddress, uint256 _erc20Supply, bytes memory _deploymentData) public tokenizeCoreOnly {
+    function setDistributionInfo(address _distributionAddress, uint256 _erc20Supply, bytes memory _deploymentData) public tokenizeCoreOnly returns (string memory) {
         //Actually, I don't think distribution flag is needed since it's tokenizeCoreOnly; 
         //will think more about this later
         require(distributionFlag == 0);
@@ -108,8 +108,9 @@ contract AssetTokenizationContract is Ownable {
         distributionAddress = _distributionAddress;
         //distribute initially
         DeploymentCoreInterface instanceDeploymentCore = DeploymentCoreInterface(_distributionAddress);
-            if(instanceDeploymentCore.onReceipt(totalSupply, _deploymentData) == true){
+            if(instanceDeploymentCore.onReceipt(totalSupply, _deploymentData) == bytes4(keccak256("onReceipt(address,uint,bytes)"))){
                 distributionFlag++;
+                return "success";
             }
             else{
                 return "err: unable to distribute initial tokens";

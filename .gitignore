@@ -6,3 +6,4 @@
 .DS_Store
 notes.txt
 node_modules
+.env

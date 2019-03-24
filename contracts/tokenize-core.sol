@@ -38,7 +38,8 @@ contract TokenizeCore is ERC721Holder, Ownable {
 				uint8, 
 				uint256,
 				uint256,
-				bytes));
+				bytes)
+			);
 		//deploys new asset tokenization contract for the contributed token
 		(bool a, address b) = lock721Token(msg.sender, _tokenId);
 		require(a == true);

@@ -4,7 +4,9 @@ const dummy721 = artifacts.require("dummy721");
 
 //const DriverCoreInterface = artifacts.require("DriverCoreInterface");
 //const DeploymentCoreInterface = artifacts.require("DeploymentCoreInterface");
+const DeploymentCoreExample = artifacts.require("DeploymentCoreExample");
 const TokenizeCore = artifacts.require("TokenizeCore");
+
 
 module.exports = function(deployer) {
   deployer.deploy(Migrations);
@@ -12,7 +14,9 @@ module.exports = function(deployer) {
   deployer.deploy(dummy721);
 
   //deployer.deploy(DriverCoreInterface);
-  //deployer.deploy(DeploymentCoreInterface);
+  deployer.deploy(DeploymentCoreExample);
   deployer.deploy(TokenizeCore);
 };
+
+
  	
