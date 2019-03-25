@@ -134,7 +134,10 @@ contract AssetTokenizationContract is Ownable {
         // makes sure that once the underlying asset is unlocked, the tokens are destroyed
         require (msg.sender != tokenizeCore);
         require (_value > 0, "value must be greater than 0");
-        require ((harbergerSetByUser[_to].initialized == true) || (_to == tokenizeCore));
+        if(distributionFlag != 0){
+            require ((harbergerSetByUser[_to].initialized == true) || (_to == tokenizeCore));
+        }
+        
         require (balances[_to] + _value >= minimumShares && ((balances[msg.sender] - _value >= minimumShares) || balances[msg.sender] - _value == 0));
 
 

@@ -1,7 +1,176 @@
-DeploymentCore:
-tx hash: 0xb3c0e3197d16802cab70618f9b8a046a5a76cb46f67e0ece85059222e3cf6b79
-contract: 0x917Df5327f14024a5e7bE456cA5444DF99C45e11
+Starting migrations...
+======================
+> Network name:    'rinkeby'
+> Network id:      4
+> Block gas limit: 7005764
 
-TokenizeCore:
-tx hash: 0x6d0af4801643ae2ac59a5fe1b8b8e00895c60ab44d1ab4c6765b2eb98dcacd68
-contract: 0x9187427bBFF081822C7777ebd990640cc64a68F1
+
+1_initial_migration.js
+======================
+
+   Replacing 'Migrations'
+   ----------------------
+   > transaction hash:    0xbe7624030d1b0cbeb55e91d4b9e5691b8f02354b9838e18175e74d8673294158
+   > Blocks: 1            Seconds: 13
+   > contract address:    0xa9Ef393F42c7cd1380980107a91A9e7E7B7C094a
+   > account:             0xEB27085fBF8D808AffD4575DA948a8EA6BceAacC
+   > balance:             15.568619994
+   > gas used:            284908
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.00569816 ETH
+
+
+   Replacing 'ERC721'
+   ------------------
+   > transaction hash:    0x4a0e54552fd8215d5e4b09d754dd3671749a74d907e8fce752a42923a26c996e
+   > Blocks: 0            Seconds: 9
+   > contract address:    0xD8Ed946Cc297250Fd058FA170eE4FDe7578C25A4
+   > account:             0xEB27085fBF8D808AffD4575DA948a8EA6BceAacC
+   > balance:             15.542260074
+   > gas used:            1317996
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.02635992 ETH
+
+
+   Replacing 'dummy721'
+   --------------------
+   > transaction hash:    0x193c82aa3a3b67a193ec42e7c1190fbbb66ebf98f2a1928653619552c5c1cefc
+   > Blocks: 0            Seconds: 9
+   > contract address:    0xbB747d4802EDC6baaA17FA0a5555B1c8cCb35aEC
+   > account:             0xEB27085fBF8D808AffD4575DA948a8EA6BceAacC
+   > balance:             15.513118834
+   > gas used:            1457062
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.02914124 ETH
+
+
+   Replacing 'DeploymentCoreExample'
+   ---------------------------------
+   > transaction hash:    0x2a4034bd1a8fc9389e3128cae18670ac178861a48490cfd75caad5b3aa74e262
+   > Blocks: 0            Seconds: 9
+   > contract address:    0x8E9B16375032D94Cf48687D3Bcd4051bae457B1D
+   > account:             0xEB27085fBF8D808AffD4575DA948a8EA6BceAacC
+   > balance:             15.499170234
+   > gas used:            697430
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.0139486 ETH
+
+
+   Replacing 'TokenizeCore'
+   ------------------------
+   > transaction hash:    0x2d4f3120d3fb36a5b4564dc3348a9ecc9a34b8df540873284934472008f6d98e
+   > Blocks: 0            Seconds: 9
+   > contract address:    0x959cd95F97609Bff4f91304201CC5AB046C6C74a
+   > account:             0xEB27085fBF8D808AffD4575DA948a8EA6BceAacC
+   > balance:             15.400298214
+   > gas used:            4943601
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.09887202 ETH
+
+
+   > Saving migration to chain.
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:          0.17401994 ETH
+
+
+Summary
+=======
+> Total deployments:   5
+> Final cost:          0.17401994 ETH
+
+
+
+
+Dev:
+
+Starting migrations...
+======================
+> Network name:    'development'
+> Network id:      5777
+> Block gas limit: 6721975
+
+
+1_initial_migration.js
+======================
+
+   Replacing 'Migrations'
+   ----------------------
+   > transaction hash:    0x3c2e278fe5cb495bd89f539075fca15a6e1987b62b28a1f6178b326a0bf8ec22
+   > Blocks: 0            Seconds: 0
+   > contract address:    0xBBDB85DBf39329F0E1658a40adA3001Db67bb373
+   > account:             0x95b17cBBECBcb51BC87faCbFA713BB45d0063fcA
+   > balance:             99.99430184
+   > gas used:            284908
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.00569816 ETH
+
+
+   Replacing 'ERC721'
+   ------------------
+   > transaction hash:    0xfdd6a7c5a41174fbd0f787573254c86063ef06e91b649871ad68380122fbb899
+   > Blocks: 0            Seconds: 0
+   > contract address:    0x84EDeD6e434cd9f54DAFfe571F92F9Fc5dB50Fe3
+   > account:             0x95b17cBBECBcb51BC87faCbFA713BB45d0063fcA
+   > balance:             99.96794192
+   > gas used:            1317996
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.02635992 ETH
+
+
+   Replacing 'dummy721'
+   --------------------
+   > transaction hash:    0x5ad91e63fe54cd985a580dc208e11c192b9712bdb4b9bae53bb77a8df0b85f44
+   > Blocks: 0            Seconds: 0
+   > contract address:    0xf2dc1fFAf2aa9dE2b33615d18fC5b00912d47333
+   > account:             0x95b17cBBECBcb51BC87faCbFA713BB45d0063fcA
+   > balance:             99.93880068
+   > gas used:            1457062
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.02914124 ETH
+
+
+   Deploying 'DeploymentCoreExample'
+   ---------------------------------
+   > transaction hash:    0x46eaf226ea048f174c5a0fcc801273bbe6f33959e36cc3561d4835b109fe2e35
+   > Blocks: 0            Seconds: 0
+   > contract address:    0x2e2DfEb505D13bB96291bEeC7BB0A56f385a720F
+   > account:             0x95b17cBBECBcb51BC87faCbFA713BB45d0063fcA
+   > balance:             99.92485208
+   > gas used:            697430
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.0139486 ETH
+
+
+   Replacing 'TokenizeCore'
+   ------------------------
+   > transaction hash:    0xe82f36f3612dc4ca191bcd6be57ff73644ec81ade7e6c9b759e10b904784afe6
+   > Blocks: 0            Seconds: 0
+   > contract address:    0x9B521845838a5384f0F4030e1C06b453d1B08D1a
+   > account:             0x95b17cBBECBcb51BC87faCbFA713BB45d0063fcA
+   > balance:             99.82598006
+   > gas used:            4943601
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.09887202 ETH
+
+
+   > Saving migration to chain.
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:          0.17401994 ETH
+
+
+Summary
+=======
+> Total deployments:   5
+> Final cost:          0.17401994 ETH

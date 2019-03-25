@@ -16,12 +16,16 @@ let dummy721ContractWallet2 = new ethers.Contract(dummy721AddressInstance, dummy
 let tokenizeCoreAddressInstance = contractAddressData.tokenizeCoreAddress;
 let tokenizeCoreAbiInstance = contractAbiData.tokenizeCoreAbi;
 let tokenizeCoreContract = new ethers.Contract(tokenizeCoreAddressInstance, tokenizeCoreAbiInstance, wallet2);
-let tokenId = 6;
+
 
 
 
 //dummy variables
-let addressesToUse = [contractAddressData.deploymentCoreExampleAddress, '0x1D329f63dbd2DfCa686a87c90D4Fe4b802F3E34D', '0xEd8915aB3ACcB024861728409A214CE6d09ABd19'];
+// let addressesToUse = [contractAddressData.deploymentCoreExampleAddress, '0x1D329f63dbd2DfCa686a87c90D4Fe4b802F3E34D', '0xEd8915aB3ACcB024861728409A214CE6d09ABd19'];
+
+//dev
+let addressesToUse = [contractAddressData.deploymentCoreExampleAddress, '0x289eF7Fbb566463197bDa8Dc3D22CF7cE407c44A', '0xEd8915aB3ACcB024861728409A214CE6d09ABd19'];
+
 console.log(addressesToUse);
 let erc20Supply = 100;
 //let erc20Supply = 100000000000000000000;
@@ -31,12 +35,45 @@ let erc20Decimals = 18;
 let minimumShares = 1;
 //let minimumShares = 1000000000000000000;
 let taxRate = 1;
-let deploymentData = "0x00";
-
+let deploymentData = ["0x00","0xaa", "0xff"];
+let tokenId = 21;
 
 
 
 tokenDeploy (tokenId, addressesToUse, erc20Supply, erc20Name, erc20Symbol, erc20Decimals, minimumShares, taxRate, deploymentData);
+
+// transferERC721Token();
+
+
+async function transferERC721Token(){
+    try{
+        let b = await dummy721ContractWallet1.functions.mintUniqueTokenTo(wallet1.signingKey.address, tokenId, {gasLimit: 100000});
+        console.log(b);
+        tokenId++;
+    } catch(err){
+        console.log(err);
+    }
+}
+
+async function tokenDeploy (tokenId, addressesToUse, erc20Supply, erc20Name, erc20Symbol, erc20Decimals, minimumShares, taxRate, deploymentData){
+    let _data = ethers.utils.defaultAbiCoder.encode(
+        [
+            'address[]', 'uint256', 'string memory', 'string memory', 'uint8', 'uint256', 'uint256', 'bytes'
+        ], 
+        [
+            addressesToUse, erc20Supply, erc20Name, erc20Symbol, erc20Decimals, minimumShares, taxRate, deploymentData
+        ]
+    );
+
+    try{
+        let c = await dummy721ContractWallet1["safeTransferFrom(address,address,uint256,bytes)"](wallet1.signingKey.address, tokenizeCoreAddressInstance, tokenId, _data, {gasLimit: 1000000});
+        console.log(c);
+    } catch(err){
+        console.log(err);
+    }
+}
+
+
 
 // let deployementCoreExample = new ethers.Contract(contractAddressData.deploymentCoreExampleAddress, contractAbiData.deploymentCoreExampleAbi, wallet1);
 // let recipientAddress1 = '0x73Fe843A2Ef562e239ca889794B18C0013e8b47F';
@@ -58,29 +95,3 @@ tokenDeploy (tokenId, addressesToUse, erc20Supply, erc20Name, erc20Symbol, erc20
 //         console.log(err);
 //     }
 // }
-
-async function tokenDeploy (tokenId, addressesToUse, erc20Supply, erc20Name, erc20Symbol, erc20Decimals, minimumShares, taxRate, deploymentData){
-    let _data = ethers.utils.defaultAbiCoder.encode(
-        [
-            'address[]', 'uint256', 'string memory', 'string memory', 'uint8', 'uint256', 'uint256', 'bytes'
-        ], 
-        [
-            addressesToUse, erc20Supply, erc20Name, erc20Symbol, erc20Decimals, minimumShares, taxRate, deploymentData
-        ]
-    );
-
-    try{
-        let b = dummy721ContractWallet1.functions.mintUniqueTokenTo(wallet1.signingKey.address, tokenId, {gasLimit: 100000});
-        console.log(b);
-        console.log('transfering');
-        let c = await dummy721ContractWallet1["safeTransferFrom(address,address,uint256,bytes)"](wallet1.signingKey.address, tokenizeCoreContract.signer.signingKey.address, tokenId, _data, {gasLimit: 100000});
-        console.log(c);
-    } catch(err){
-        console.log(err);
-    }
-
-    tokenId++;
-    
-    // tokenizeCoreContract.functions.
-    
-}

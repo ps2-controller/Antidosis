@@ -35,14 +35,14 @@
     "absolutePath": "/Users/anurag/Projects/Antidosis/contracts/deployment-core-interface.sol",
     "exportedSymbols": {
       "DeploymentCoreInterface": [
-        1110
+        1115
       ]
     },
-    "id": 1111,
+    "id": 1116,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 1100,
+        "id": 1105,
         "literals": [
           "solidity",
           "^",
@@ -58,9 +58,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 1110,
+        "id": 1115,
         "linearizedBaseContracts": [
-          1110
+          1115
         ],
         "name": "DeploymentCoreInterface",
         "nodeType": "ContractDefinition",
@@ -68,22 +68,22 @@
           {
             "body": null,
             "documentation": null,
-            "id": 1109,
+            "id": 1114,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "onReceipt",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1105,
+              "id": 1110,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1102,
+                  "id": 1107,
                   "name": "_totalSupply",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1109,
+                  "scope": 1114,
                   "src": "81:17:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -92,7 +92,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1101,
+                    "id": 1106,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "81:4:4",
@@ -106,10 +106,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 1104,
+                  "id": 1109,
                   "name": "_deploymentData",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1109,
+                  "scope": 1114,
                   "src": "100:30:4",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -118,7 +118,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 1103,
+                    "id": 1108,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "100:5:4",
@@ -134,15 +134,15 @@
               "src": "80:51:4"
             },
             "returnParameters": {
-              "id": 1108,
+              "id": 1113,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1107,
+                  "id": 1112,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1109,
+                  "scope": 1114,
                   "src": "150:6:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -151,7 +151,7 @@
                     "typeString": "bytes4"
                   },
                   "typeName": {
-                    "id": 1106,
+                    "id": 1111,
                     "name": "bytes4",
                     "nodeType": "ElementaryTypeName",
                     "src": "150:6:4",
@@ -166,14 +166,14 @@
               ],
               "src": "149:8:4"
             },
-            "scope": 1110,
+            "scope": 1115,
             "src": "62:96:4",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 1111,
+        "scope": 1116,
         "src": "26:134:4"
       }
     ],
@@ -183,14 +183,14 @@
     "absolutePath": "/Users/anurag/Projects/Antidosis/contracts/deployment-core-interface.sol",
     "exportedSymbols": {
       "DeploymentCoreInterface": [
-        1110
+        1115
       ]
     },
-    "id": 1111,
+    "id": 1116,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 1100,
+        "id": 1105,
         "literals": [
           "solidity",
           "^",
@@ -206,9 +206,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 1110,
+        "id": 1115,
         "linearizedBaseContracts": [
-          1110
+          1115
         ],
         "name": "DeploymentCoreInterface",
         "nodeType": "ContractDefinition",
@@ -216,22 +216,22 @@
           {
             "body": null,
             "documentation": null,
-            "id": 1109,
+            "id": 1114,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "onReceipt",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1105,
+              "id": 1110,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1102,
+                  "id": 1107,
                   "name": "_totalSupply",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1109,
+                  "scope": 1114,
                   "src": "81:17:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -240,7 +240,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1101,
+                    "id": 1106,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "81:4:4",
@@ -254,10 +254,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 1104,
+                  "id": 1109,
                   "name": "_deploymentData",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1109,
+                  "scope": 1114,
                   "src": "100:30:4",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -266,7 +266,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 1103,
+                    "id": 1108,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "100:5:4",
@@ -282,15 +282,15 @@
               "src": "80:51:4"
             },
             "returnParameters": {
-              "id": 1108,
+              "id": 1113,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1107,
+                  "id": 1112,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1109,
+                  "scope": 1114,
                   "src": "150:6:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -299,7 +299,7 @@
                     "typeString": "bytes4"
                   },
                   "typeName": {
-                    "id": 1106,
+                    "id": 1111,
                     "name": "bytes4",
                     "nodeType": "ElementaryTypeName",
                     "src": "150:6:4",
@@ -314,14 +314,14 @@
               ],
               "src": "149:8:4"
             },
-            "scope": 1110,
+            "scope": 1115,
             "src": "62:96:4",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 1111,
+        "scope": 1116,
         "src": "26:134:4"
       }
     ],
@@ -333,7 +333,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.0",
-  "updatedAt": "2019-03-22T22:16:57.310Z",
+  "updatedAt": "2019-03-24T17:37:26.312Z",
   "devdoc": {
     "methods": {}
   },
