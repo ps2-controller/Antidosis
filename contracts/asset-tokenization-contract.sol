@@ -1,9 +1,11 @@
 pragma solidity ^0.5.0;
+
 import 'openzeppelin-solidity/contracts/token/ERC20/ERC20.sol';
 import 'openzeppelin-solidity/contracts/ownership/Ownable.sol';
 import "./deployment-core-example.sol";
-import "./tokenize-core.sol";
+import "./deployment-core-interface.sol";
 import "./driver-core.sol";
+import "./tokenize-core-interface.sol";
 
 //todo:
 //add eip 161 support
@@ -84,13 +86,13 @@ contract AssetTokenizationContract is Ownable {
         _;
     }
 
-    function setERC20(string memory _erc20Name, string memory _erc20Symbol, uint8 _erc20Decimals) public tokenizeCoreOnly {
+    function setERC20(string calldata _erc20Name, string calldata _erc20Symbol, uint8 _erc20Decimals) external tokenizeCoreOnly {
         name = _erc20Name;
         symbol = _erc20Symbol;
         decimals = _erc20Decimals;
     }
 
-    function setMainInfo(address _paymentAddress, address _taxAddress, uint256 _minimumShares, uint256 _taxRate) public tokenizeCoreOnly {
+    function setMainInfo(address _paymentAddress, address _taxAddress, uint256 _minimumShares, uint256 _taxRate) external tokenizeCoreOnly {
 
         paymentAddress = _paymentAddress;
         taxAddress = _taxAddress;
@@ -98,7 +100,7 @@ contract AssetTokenizationContract is Ownable {
         taxRate = _taxRate;
     }
 
-    function setDistributionInfo(address _distributionAddress, uint256 _erc20Supply, bytes memory _deploymentData) public tokenizeCoreOnly returns (string memory) {
+    function setDistributionInfo(address _distributionAddress, uint256 _erc20Supply, bytes calldata _deploymentData) external tokenizeCoreOnly returns (string memory) {
         //Actually, I don't think distribution flag is needed since it's tokenizeCoreOnly; 
         //will think more about this later
         require(distributionFlag == 0);
@@ -108,13 +110,13 @@ contract AssetTokenizationContract is Ownable {
         distributionAddress = _distributionAddress;
         //distribute initially
         DeploymentCoreInterface instanceDeploymentCore = DeploymentCoreInterface(_distributionAddress);
-            if(instanceDeploymentCore.onReceipt(totalSupply, _deploymentData) == bytes4(keccak256("onReceipt(address,uint,bytes)"))){
-                distributionFlag++;
-                return "success";
-            }
-            else{
-                return "err: unable to distribute initial tokens";
-            }
+        //     if(instanceDeploymentCore.onReceipt(totalSupply, _deploymentData) == bytes4(keccak256("onReceipt(address,uint,bytes)"))){
+        //         distributionFlag++;
+        //         return "success";
+        //     }
+        //     else{
+        //         return "err: unable to distribute initial tokens";
+        //     }
     }
 
 
@@ -289,7 +291,7 @@ contract AssetTokenizationContract is Ownable {
     function unlockToken() public {
         require (balances[msg.sender] == totalSupply);
         transferFrom(msg.sender, tokenizeCore, totalSupply);
-        TokenizeCore instanceTokenizeCore = TokenizeCore(tokenizeCore);
+        TokenizeCoreInterface instanceTokenizeCore = TokenizeCoreInterface(tokenizeCore);
         instanceTokenizeCore.unlockToken(contractUnderlyingToken.underlyingTokenAddress, contractUnderlyingToken.underlyingTokenId, msg.sender);
     }
 

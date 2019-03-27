@@ -82,6 +82,58 @@ const tokenizeCoreAbi = [
       "anonymous": false,
       "inputs": [
         {
+          "indexed": false,
+          "name": "tokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "receivedToken",
+      "type": "event",
+      "signature": "0x4780d897966fffb87040b96f2acea20fe95d9897f807afc5ecd09dedf8a16f5f"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "erc20Supply",
+          "type": "uint256"
+        }
+      ],
+      "name": "ERC721Received",
+      "type": "event",
+      "signature": "0xb46a8f8e303ee6dd6840431dbba495e67e05c1178a73778eb33ba68664607378"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "instanceAssetTokenizationContract",
+          "type": "address"
+        }
+      ],
+      "name": "newAssetTokenizationContractCreated",
+      "type": "event",
+      "signature": "0x47dd0ab44ea36d05425b0b5d44617aeefb5994d9c09f1df76c8318c4a1122eb7"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "tokenToLock",
+          "type": "uint256"
+        }
+      ],
+      "name": "lockingToken",
+      "type": "event",
+      "signature": "0x69372e81de3cff3238a9e43ff7ab8eba30ddfd18c4b9b1aeb27e66c6d4c5c623"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
           "indexed": true,
           "name": "previousOwner",
           "type": "address"
@@ -596,6 +648,19 @@ const tokenizeCoreAbi = [
       "name": "ApprovalForAll",
       "type": "event",
       "signature": "0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "receiver",
+          "type": "address"
+        }
+      ],
+      "name": "minted",
+      "type": "event",
+      "signature": "0x1e7269c5e216aef80eb002ee0e06475f7f15cded97ccfed2584a614250688d52"
     },
     {
       "constant": false,

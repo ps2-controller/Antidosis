@@ -2878,8 +2878,8 @@
         }
       },
       "links": {},
-      "address": "0xf5a4Dc0349d27667BB7697a868b2b842FBa5388c",
-      "transactionHash": "0x08c195ed339f1ab03f3b672c7c7f19192f1e56841e93bf0aad0758018a5c7a7c"
+      "address": "0x6599f67Eedb471Efded2ab3204Fb454260348Ae2",
+      "transactionHash": "0x928a8b73ad9c371737585ee49b74cfb0ce5ba8b94be65970df898e2a8ee391f7"
     },
     "1553480041081": {
       "events": {},
@@ -2889,7 +2889,7 @@
     }
   },
   "schemaVersion": "3.0.0",
-  "updatedAt": "2019-03-25T21:25:48.471Z",
+  "updatedAt": "2019-03-27T16:35:53.199Z",
   "devdoc": {
     "methods": {
       "isOwner()": {
