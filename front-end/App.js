@@ -36,16 +36,16 @@ let minimumShares = 1;
 //let minimumShares = 1000000000000000000;
 let taxRate = 1;
 let deploymentData = ["0x00","0xaa", "0xff"];
-let tokenId = 21;
+let tokenId = 25;
 
 
 
 tokenDeploy (tokenId, addressesToUse, erc20Supply, erc20Name, erc20Symbol, erc20Decimals, minimumShares, taxRate, deploymentData);
 
-// transferERC721Token();
+// mintERC721Token();
 
 
-async function transferERC721Token(){
+async function mintERC721Token(){
     try{
         let b = await dummy721ContractWallet1.functions.mintUniqueTokenTo(wallet1.signingKey.address, tokenId, {gasLimit: 100000});
         console.log(b);
@@ -66,7 +66,7 @@ async function tokenDeploy (tokenId, addressesToUse, erc20Supply, erc20Name, erc
     );
 
     try{
-        let c = await dummy721ContractWallet1["safeTransferFrom(address,address,uint256,bytes)"](wallet1.signingKey.address, tokenizeCoreAddressInstance, tokenId, _data, {gasLimit: 1000000});
+        let c = await dummy721ContractWallet1.safeTransferFrom(wallet1.signingKey.address, tokenizeCoreAddressInstance, tokenId, {gasLimit: 1000000});
         console.log(c);
     } catch(err){
         console.log(err);
