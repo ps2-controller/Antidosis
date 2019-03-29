@@ -5,100 +5,75 @@ const provider = ethers.getDefaultProvider(network="rinkeby");
 const contractAddressData = require('./data/deployedContractAddresses.js');
 const contractAbiData = require ('./data/abis.js');
 const wallets = require('./config/ethersConfig.js');
-const wallet1 = wallets.wallet1;
-const wallet2 = wallets.wallet2;
+const wallet = wallets.wallet;
 
 let dummy721AddressInstance = contractAddressData.dummy721Address;
 let dummy721AbiInstance = contractAbiData.dummy721Abi;
 
-let dummy721ContractWallet1 = new ethers.Contract(dummy721AddressInstance, dummy721AbiInstance, wallet1);   
-let dummy721ContractWallet2 = new ethers.Contract(dummy721AddressInstance, dummy721AbiInstance, wallet2);
+let dummy721ContractWallet = new ethers.Contract(dummy721AddressInstance, dummy721AbiInstance, wallet);   
 let tokenizeCoreAddressInstance = contractAddressData.tokenizeCoreAddress;
 let tokenizeCoreAbiInstance = contractAbiData.tokenizeCoreAbi;
-let tokenizeCoreContract = new ethers.Contract(tokenizeCoreAddressInstance, tokenizeCoreAbiInstance, wallet2);
-
-
-
-
-//dummy variables
-// let addressesToUse = [contractAddressData.deploymentCoreExampleAddress, '0x1D329f63dbd2DfCa686a87c90D4Fe4b802F3E34D', '0xEd8915aB3ACcB024861728409A214CE6d09ABd19'];
 
 //dev
-const addressesToUse = [contractAddressData.deploymentCoreExampleAddress, '0x289eF7Fbb566463197bDa8Dc3D22CF7cE407c44A', '0xEd8915aB3ACcB024861728409A214CE6d09ABd19'];
+const addressesToUse = ['0x289eF7Fbb566463197bDa8Dc3D22CF7cE407c44A', '0xEd8915aB3ACcB024861728409A214CE6d09ABd19'];
 let erc20Supply = 100;
-//let erc20Supply = 100000000000000000000;
 let erc20Name = 'lolol';
 let erc20Symbol = 'LOL';
 let erc20Decimals = 18;
 let minimumShares = 1;
-//let minimumShares = 1000000000000000000;
 let taxRate = 1;
-let deploymentData = ["0x00","0xaa", "0xff"];
-let tokenId = 82;
 
+mintAndLock();
 
-// console.log(dummy721ContractWallet1.functions);
-
-// tokenDeploy (tokenId, addressesToUse, erc20Supply, erc20Name, erc20Symbol, erc20Decimals, minimumShares, taxRate, deploymentData);
-
-mintERC721Token();
-
-
-async function mintERC721Token(){
+async function mintAndLock(){
     try{
-        await dummy721ContractWallet1.functions.mintUniqueTokenTo(wallet1.signingKey.address, tokenId, {gasLimit: 100000});
-        await dummy721ContractWallet1.once("minted", (res) => {
-            console.log(res);
+        await dummy721ContractWallet.functions.mintUniqueTokenTo(wallet.signingKey.address, {gasLimit: 100000});
+        let tokenId;
+        await dummy721ContractWallet.once("minted", async (res) => {
+            let tokenId = await res.toNumber();
+            await setTimeout(async (tokenId, addressesToUse, erc20Supply, erc20Name, erc20Symbol, erc20Decimals, minimumShares, taxRate) => {
+                let _data = ethers.utils.defaultAbiCoder.encode(
+                    [
+                        'address[2] memory', 'uint256', 'string memory', 'string memory', 'uint8', 'uint256', 'uint256'
+                    ], 
+                    [
+                        addressesToUse, erc20Supply, erc20Name, erc20Symbol, erc20Decimals, minimumShares, taxRate
+                    ]
+                );
+            
+                try{
+                    await dummy721ContractWallet['safeTransferFrom(address,address,uint256,bytes)'](wallet.signingKey.address, tokenizeCoreAddressInstance, tokenId, _data, {gasLimit: 5000000});
+                    let tokenizeCoreContract = new ethers.Contract(tokenizeCoreAddressInstance, tokenizeCoreAbiInstance, wallet);
+                    await tokenizeCoreContract.once("receivedToken", (res) => {
+                        console.log(res);
+                    });
+                    await tokenizeCoreContract.once("lockingToken", (res) => {
+                        console.log(res);
+                    });
+                    await tokenizeCoreContract.once("newAssetTokenizationContractCreated", (res) => {
+                        console.log(res);
+                        process.exit();
+                    });
+                } catch(err){
+                    console.log(err);
+                }
+            }, 5000, tokenId, addressesToUse, erc20Supply, erc20Name, erc20Symbol, erc20Decimals, minimumShares, taxRate);
         });
+
     } catch(err){
         console.log(err);
     }
 }
 
-let x = 1;
-let y = 2;
-let z = 3;
-
-let _testData = ethers.utils.defaultAbiCoder.encode(
-    [
-        'uint256', 'uint256', 'uint256'
-    ], 
-    [
-        x, y, z
-    ]
-);
-
-setTimeout(async (tokenId, addressesToUse, erc20Supply, erc20Name, erc20Symbol, erc20Decimals, minimumShares, taxRate, deploymentData) => {
-    let _data = ethers.utils.defaultAbiCoder.encode(
-        [
-            'address[3] memory', 'uint256', 'string memory', 'string memory', 'uint8', 'uint256', 'uint256', 'bytes memory'
-        ], 
-        [
-            addressesToUse, erc20Supply, erc20Name, erc20Symbol, erc20Decimals, minimumShares, taxRate, deploymentData
-        ]
-    );
-
-    try{
-        await dummy721ContractWallet1['safeTransferFrom(address,address,uint256,bytes)'](wallet1.signingKey.address, tokenizeCoreAddressInstance, tokenId, _data, {gasLimit: 10000000});
-        let tokenizeCoreContract = new ethers.Contract(tokenizeCoreAddressInstance, tokenizeCoreAbiInstance, wallet1);
-        await tokenizeCoreContract.once("receivedToken", (res) => {
-            console.log(res);
-        });
-        await tokenizeCoreContract.once("lockingToken", (res) => {
-            console.log(res);
-        });
-        let deploymentCoreContract = new ethers.Contract(contractAddressData.deploymentCoreExampleAddress, contractAbiData.deploymentCoreExampleAbi, wallet1);
-        await deploymentCoreContract.once("checkIt", (res) => {
-            console.log(res);
-        });
-    } catch(err){
-        console.log(err);
-    }
-}, 5000, tokenId, addressesToUse, erc20Supply, erc20Name, erc20Symbol, erc20Decimals, minimumShares, taxRate, _testData);
 
 
 
-// let deployementCoreExample = new ethers.Contract(contractAddressData.deploymentCoreExampleAddress, contractAbiData.deploymentCoreExampleAbi, wallet1);
+
+
+
+
+
+// let deployementCoreExample = new ethers.Contract(contractAddressData.deploymentCoreExampleAddress, contractAbiData.deploymentCoreExampleAbi, wallet);
 // let recipientAddress1 = '0x73Fe843A2Ef562e239ca889794B18C0013e8b47F';
 // let recipientAddress2 = '0xB3aE76e84aa83050a1A7434347B823E85290aDfB';
 // let recipientAddress3 = '0x4398Ea594C750347B0b6bc41EaEFfc169e52cc67';

@@ -41,37 +41,14 @@
         {
           "name": "_taxRate",
           "type": "uint256"
-        }
-      ],
-      "name": "setMainInfo",
-      "outputs": [],
-      "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "_distributionAddress",
-          "type": "address"
         },
         {
           "name": "_erc20Supply",
           "type": "uint256"
-        },
-        {
-          "name": "_deploymentData",
-          "type": "bytes"
         }
       ],
-      "name": "setDistributionInfo",
-      "outputs": [
-        {
-          "name": "",
-          "type": "string"
-        }
-      ],
+      "name": "setMainInfo",
+      "outputs": [],
       "payable": false,
       "stateMutability": "nonpayable",
       "type": "function"
@@ -81,16 +58,16 @@
   "deployedBytecode": "0x",
   "sourceMap": "",
   "deployedSourceMap": "",
-  "source": "pragma solidity ^0.5.0;\n\ninterface IAssetTokenizationContract{\n    function setERC20(string calldata _erc20Name, string calldata _erc20Symbol, uint8 _erc20Decimals) external;\n    function setMainInfo(address _paymentAddress, address _taxAddress, uint256 _minimumShares, uint256 _taxRate) external;\n    function setDistributionInfo(address _distributionAddress, uint256 _erc20Supply, bytes calldata _deploymentData) external returns (string memory);\n}",
+  "source": "pragma solidity ^0.5.0;\n\ninterface IAssetTokenizationContract{\n    function setERC20(string calldata _erc20Name, string calldata _erc20Symbol, uint8 _erc20Decimals) external;\n    function setMainInfo(address _paymentAddress, address _taxAddress, uint256 _minimumShares, uint256 _taxRate, uint256 _erc20Supply) external;\n}",
   "sourcePath": "/Users/anurag/Projects/Antidosis/contracts/IAssetTokenizationContract.sol",
   "ast": {
     "absolutePath": "/Users/anurag/Projects/Antidosis/contracts/IAssetTokenizationContract.sol",
     "exportedSymbols": {
       "IAssetTokenizationContract": [
-        33
+        24
       ]
     },
-    "id": 34,
+    "id": 25,
     "nodeType": "SourceUnit",
     "nodes": [
       {
@@ -110,9 +87,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 33,
+        "id": 24,
         "linearizedBaseContracts": [
-          33
+          24
         ],
         "name": "IAssetTokenizationContract",
         "nodeType": "ContractDefinition",
@@ -217,7 +194,7 @@
               "parameters": [],
               "src": "173:0:0"
             },
-            "scope": 33,
+            "scope": 24,
             "src": "67:107:0",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -226,14 +203,14 @@
           {
             "body": null,
             "documentation": null,
-            "id": 21,
+            "id": 23,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "setMainInfo",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 19,
+              "id": 21,
               "nodeType": "ParameterList",
               "parameters": [
                 {
@@ -241,7 +218,7 @@
                   "id": 12,
                   "name": "_paymentAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 21,
+                  "scope": 23,
                   "src": "200:23:0",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -268,7 +245,7 @@
                   "id": 14,
                   "name": "_taxAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 21,
+                  "scope": 23,
                   "src": "225:19:0",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -295,7 +272,7 @@
                   "id": 16,
                   "name": "_minimumShares",
                   "nodeType": "VariableDeclaration",
-                  "scope": 21,
+                  "scope": 23,
                   "src": "246:22:0",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -321,7 +298,7 @@
                   "id": 18,
                   "name": "_taxRate",
                   "nodeType": "VariableDeclaration",
-                  "scope": 21,
+                  "scope": 23,
                   "src": "270:16:0",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -341,69 +318,14 @@
                   },
                   "value": null,
                   "visibility": "internal"
-                }
-              ],
-              "src": "199:88:0"
-            },
-            "returnParameters": {
-              "id": 20,
-              "nodeType": "ParameterList",
-              "parameters": [],
-              "src": "296:0:0"
-            },
-            "scope": 33,
-            "src": "179:118:0",
-            "stateMutability": "nonpayable",
-            "superFunction": null,
-            "visibility": "external"
-          },
-          {
-            "body": null,
-            "documentation": null,
-            "id": 32,
-            "implemented": false,
-            "kind": "function",
-            "modifiers": [],
-            "name": "setDistributionInfo",
-            "nodeType": "FunctionDefinition",
-            "parameters": {
-              "id": 28,
-              "nodeType": "ParameterList",
-              "parameters": [
-                {
-                  "constant": false,
-                  "id": 23,
-                  "name": "_distributionAddress",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 32,
-                  "src": "331:28:0",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_address",
-                    "typeString": "address"
-                  },
-                  "typeName": {
-                    "id": 22,
-                    "name": "address",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "331:7:0",
-                    "stateMutability": "nonpayable",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_address",
-                      "typeString": "address"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
                 },
                 {
                   "constant": false,
-                  "id": 25,
+                  "id": 20,
                   "name": "_erc20Supply",
                   "nodeType": "VariableDeclaration",
-                  "scope": 32,
-                  "src": "361:20:0",
+                  "scope": 23,
+                  "src": "288:20:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -411,10 +333,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 24,
+                    "id": 19,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "361:7:0",
+                    "src": "288:7:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -422,90 +344,37 @@
                   },
                   "value": null,
                   "visibility": "internal"
-                },
-                {
-                  "constant": false,
-                  "id": 27,
-                  "name": "_deploymentData",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 32,
-                  "src": "383:30:0",
-                  "stateVariable": false,
-                  "storageLocation": "calldata",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_bytes_calldata_ptr",
-                    "typeString": "bytes"
-                  },
-                  "typeName": {
-                    "id": 26,
-                    "name": "bytes",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "383:5:0",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_bytes_storage_ptr",
-                      "typeString": "bytes"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
                 }
               ],
-              "src": "330:84:0"
+              "src": "199:110:0"
             },
             "returnParameters": {
-              "id": 31,
+              "id": 22,
               "nodeType": "ParameterList",
-              "parameters": [
-                {
-                  "constant": false,
-                  "id": 30,
-                  "name": "",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 32,
-                  "src": "433:13:0",
-                  "stateVariable": false,
-                  "storageLocation": "memory",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_string_memory_ptr",
-                    "typeString": "string"
-                  },
-                  "typeName": {
-                    "id": 29,
-                    "name": "string",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "433:6:0",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_string_storage_ptr",
-                      "typeString": "string"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
-                }
-              ],
-              "src": "432:15:0"
+              "parameters": [],
+              "src": "318:0:0"
             },
-            "scope": 33,
-            "src": "302:146:0",
+            "scope": 24,
+            "src": "179:140:0",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 34,
-        "src": "25:425:0"
+        "scope": 25,
+        "src": "25:296:0"
       }
     ],
-    "src": "0:450:0"
+    "src": "0:321:0"
   },
   "legacyAST": {
     "absolutePath": "/Users/anurag/Projects/Antidosis/contracts/IAssetTokenizationContract.sol",
     "exportedSymbols": {
       "IAssetTokenizationContract": [
-        33
+        24
       ]
     },
-    "id": 34,
+    "id": 25,
     "nodeType": "SourceUnit",
     "nodes": [
       {
@@ -525,9 +394,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 33,
+        "id": 24,
         "linearizedBaseContracts": [
-          33
+          24
         ],
         "name": "IAssetTokenizationContract",
         "nodeType": "ContractDefinition",
@@ -632,7 +501,7 @@
               "parameters": [],
               "src": "173:0:0"
             },
-            "scope": 33,
+            "scope": 24,
             "src": "67:107:0",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -641,14 +510,14 @@
           {
             "body": null,
             "documentation": null,
-            "id": 21,
+            "id": 23,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "setMainInfo",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 19,
+              "id": 21,
               "nodeType": "ParameterList",
               "parameters": [
                 {
@@ -656,7 +525,7 @@
                   "id": 12,
                   "name": "_paymentAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 21,
+                  "scope": 23,
                   "src": "200:23:0",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -683,7 +552,7 @@
                   "id": 14,
                   "name": "_taxAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 21,
+                  "scope": 23,
                   "src": "225:19:0",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -710,7 +579,7 @@
                   "id": 16,
                   "name": "_minimumShares",
                   "nodeType": "VariableDeclaration",
-                  "scope": 21,
+                  "scope": 23,
                   "src": "246:22:0",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -736,7 +605,7 @@
                   "id": 18,
                   "name": "_taxRate",
                   "nodeType": "VariableDeclaration",
-                  "scope": 21,
+                  "scope": 23,
                   "src": "270:16:0",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -756,69 +625,14 @@
                   },
                   "value": null,
                   "visibility": "internal"
-                }
-              ],
-              "src": "199:88:0"
-            },
-            "returnParameters": {
-              "id": 20,
-              "nodeType": "ParameterList",
-              "parameters": [],
-              "src": "296:0:0"
-            },
-            "scope": 33,
-            "src": "179:118:0",
-            "stateMutability": "nonpayable",
-            "superFunction": null,
-            "visibility": "external"
-          },
-          {
-            "body": null,
-            "documentation": null,
-            "id": 32,
-            "implemented": false,
-            "kind": "function",
-            "modifiers": [],
-            "name": "setDistributionInfo",
-            "nodeType": "FunctionDefinition",
-            "parameters": {
-              "id": 28,
-              "nodeType": "ParameterList",
-              "parameters": [
-                {
-                  "constant": false,
-                  "id": 23,
-                  "name": "_distributionAddress",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 32,
-                  "src": "331:28:0",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_address",
-                    "typeString": "address"
-                  },
-                  "typeName": {
-                    "id": 22,
-                    "name": "address",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "331:7:0",
-                    "stateMutability": "nonpayable",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_address",
-                      "typeString": "address"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
                 },
                 {
                   "constant": false,
-                  "id": 25,
+                  "id": 20,
                   "name": "_erc20Supply",
                   "nodeType": "VariableDeclaration",
-                  "scope": 32,
-                  "src": "361:20:0",
+                  "scope": 23,
+                  "src": "288:20:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -826,10 +640,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 24,
+                    "id": 19,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "361:7:0",
+                    "src": "288:7:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -837,81 +651,28 @@
                   },
                   "value": null,
                   "visibility": "internal"
-                },
-                {
-                  "constant": false,
-                  "id": 27,
-                  "name": "_deploymentData",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 32,
-                  "src": "383:30:0",
-                  "stateVariable": false,
-                  "storageLocation": "calldata",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_bytes_calldata_ptr",
-                    "typeString": "bytes"
-                  },
-                  "typeName": {
-                    "id": 26,
-                    "name": "bytes",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "383:5:0",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_bytes_storage_ptr",
-                      "typeString": "bytes"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
                 }
               ],
-              "src": "330:84:0"
+              "src": "199:110:0"
             },
             "returnParameters": {
-              "id": 31,
+              "id": 22,
               "nodeType": "ParameterList",
-              "parameters": [
-                {
-                  "constant": false,
-                  "id": 30,
-                  "name": "",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 32,
-                  "src": "433:13:0",
-                  "stateVariable": false,
-                  "storageLocation": "memory",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_string_memory_ptr",
-                    "typeString": "string"
-                  },
-                  "typeName": {
-                    "id": 29,
-                    "name": "string",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "433:6:0",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_string_storage_ptr",
-                      "typeString": "string"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
-                }
-              ],
-              "src": "432:15:0"
+              "parameters": [],
+              "src": "318:0:0"
             },
-            "scope": 33,
-            "src": "302:146:0",
+            "scope": 24,
+            "src": "179:140:0",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 34,
-        "src": "25:425:0"
+        "scope": 25,
+        "src": "25:296:0"
       }
     ],
-    "src": "0:450:0"
+    "src": "0:321:0"
   },
   "compiler": {
     "name": "solc",
@@ -919,7 +680,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.0",
-  "updatedAt": "2019-03-27T16:34:48.518Z",
+  "updatedAt": "2019-03-29T02:32:54.560Z",
   "devdoc": {
     "methods": {}
   },

@@ -91,24 +91,24 @@ contract AssetTokenizationContract is Ownable {
         decimals = _erc20Decimals;
     }
 
-    function setMainInfo(address _paymentAddress, address _taxAddress, uint256 _minimumShares, uint256 _taxRate) external tokenizeCoreOnly {
-
+    function setMainInfo(address _paymentAddress, address _taxAddress, uint256 _minimumShares, uint256 _taxRate, uint256 _erc20Supply) external tokenizeCoreOnly {
         paymentAddress = _paymentAddress;
         taxAddress = _taxAddress;
         minimumShares = _minimumShares;
         taxRate = _taxRate;
+        totalSupply = _erc20Supply;
+        balances[address(this)] = _erc20Supply;
     }
 
-    function setDistributionInfo(address _distributionAddress, uint256 _erc20Supply, bytes calldata _deploymentData) external tokenizeCoreOnly returns (string memory) {
+    // function setDistributionInfo(address _distributionAddress, bytes calldata _deploymentData) external tokenizeCoreOnly returns (string memory) {
         //Actually, I don't think distribution flag is needed since it's tokenizeCoreOnly; 
         //will think more about this later
-        require(distributionFlag == 0);
-        totalSupply = _erc20Supply;
-        balances[_distributionAddress] = _erc20Supply;
+        // require(distributionFlag == 0);
+        
+        
         // set distribution address
-        distributionAddress = _distributionAddress;
         //distribute initially
-        DeploymentCoreInterface instanceDeploymentCore = DeploymentCoreInterface(_distributionAddress);
+        // DeploymentCoreInterface instanceDeploymentCore = DeploymentCoreInterface();
         //     instanceDeploymentCore.onReceipt(totalSupply, _deploymentData);
             // bytes4 g = DeploymentCoreInterface(_distributionAddress).onReceipt(totalSupply, _deploymentData);
             // emit checkIt(g);
@@ -119,7 +119,7 @@ contract AssetTokenizationContract is Ownable {
             // else{
             //     return "err: unable to distribute initial tokens";
             // }
-    }
+    // }
 
 
    function setHarberger (uint _userValue, uint _userDuration) public {

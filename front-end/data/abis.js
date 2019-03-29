@@ -511,6 +511,21 @@ const tokenizeCoreAbi = [
       "signature": "0x70a08231"
     },
     {
+      "constant": true,
+      "inputs": [],
+      "name": "nextTokenId",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0x75794a3c"
+    },
+    {
       "constant": false,
       "inputs": [
         {
@@ -654,13 +669,13 @@ const tokenizeCoreAbi = [
       "inputs": [
         {
           "indexed": false,
-          "name": "receiver",
-          "type": "address"
+          "name": "_tokenId",
+          "type": "uint256"
         }
       ],
       "name": "minted",
       "type": "event",
-      "signature": "0x1e7269c5e216aef80eb002ee0e06475f7f15cded97ccfed2584a614250688d52"
+      "signature": "0x7dc0bf3ff15656545da2c5f0567962839fe379f74aacdfc4e8025bb24e0c082d"
     },
     {
       "constant": false,
@@ -668,10 +683,6 @@ const tokenizeCoreAbi = [
         {
           "name": "_to",
           "type": "address"
-        },
-        {
-          "name": "_tokenId",
-          "type": "uint256"
         }
       ],
       "name": "mintUniqueTokenTo",
@@ -679,7 +690,7 @@ const tokenizeCoreAbi = [
       "payable": false,
       "stateMutability": "nonpayable",
       "type": "function",
-      "signature": "0xb6d5e8cd"
+      "signature": "0xeae7e6fe"
     }
   ];
 

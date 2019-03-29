@@ -2,13 +2,11 @@ const ethers = require('ethers');
 require('dotenv').config();
 
 //testnet/mainnet
-// const privateKey1 = process.env.privateKey1;
-// const privateKey2 = process.env.privateKey2;
+// const privateKey = process.env.privateKey;
 
 
 //dev
-const privateKey1 = process.env.privateKeyDev1;
-const privateKey2 = process.env.privateKeyDev2;
+const privateKey = process.env.privateKeyDev;
 
 
 //mainnet
@@ -22,9 +20,7 @@ const privateKey2 = process.env.privateKeyDev2;
 const url = "http://localhost:8545";
 const defaultProvider = new ethers.providers.JsonRpcProvider(url);
 
-const wallet1 = new ethers.Wallet(privateKey1, defaultProvider);
-const wallet2 = new ethers.Wallet(privateKey2, defaultProvider);
+const wallet = new ethers.Wallet(privateKey, defaultProvider);
 module.exports = {
-    wallet1: wallet1,
-    wallet2: wallet2
+    wallet: wallet
 }
