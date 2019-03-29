@@ -6,9 +6,9 @@
 
 
 //dev
-const tokenizeCoreAddress = `0xFcD0EB9003bFAB4B491B8223525447f30c6367A5`;
-const deploymentCoreExampleAddress = `0x6599f67Eedb471Efded2ab3204Fb454260348Ae2`;
-const dummy721Address = `0x648577cd5a18C4B9CbE7335E9C66a3DAC6862005`;
+const tokenizeCoreAddress = `0x514DD1BdE26fe029B73682627C6beBFe99164f20 `;
+const deploymentCoreExampleAddress = `0x41B7a1873e6f19E3fC853e4F6b8d23Dd620CD026`;
+const dummy721Address = `0x268B3b9F995e8910E2de995f310c215BA16a1641`;
 
 module.exports = {
     tokenizeCoreAddress: tokenizeCoreAddress,

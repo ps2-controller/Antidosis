@@ -34,7 +34,7 @@ let minimumShares = 1;
 //let minimumShares = 1000000000000000000;
 let taxRate = 1;
 let deploymentData = ["0x00","0xaa", "0xff"];
-let tokenId = 64;
+let tokenId = 82;
 
 
 // console.log(dummy721ContractWallet1.functions);
@@ -55,6 +55,19 @@ async function mintERC721Token(){
     }
 }
 
+let x = 1;
+let y = 2;
+let z = 3;
+
+let _testData = ethers.utils.defaultAbiCoder.encode(
+    [
+        'uint256', 'uint256', 'uint256'
+    ], 
+    [
+        x, y, z
+    ]
+);
+
 setTimeout(async (tokenId, addressesToUse, erc20Supply, erc20Name, erc20Symbol, erc20Decimals, minimumShares, taxRate, deploymentData) => {
     let _data = ethers.utils.defaultAbiCoder.encode(
         [
@@ -66,7 +79,7 @@ setTimeout(async (tokenId, addressesToUse, erc20Supply, erc20Name, erc20Symbol, 
     );
 
     try{
-        await dummy721ContractWallet1['safeTransferFrom(address,address,uint256,bytes)'](wallet1.signingKey.address, tokenizeCoreAddressInstance, tokenId, _data, {gasLimit: 5000000});
+        await dummy721ContractWallet1['safeTransferFrom(address,address,uint256,bytes)'](wallet1.signingKey.address, tokenizeCoreAddressInstance, tokenId, _data, {gasLimit: 10000000});
         let tokenizeCoreContract = new ethers.Contract(tokenizeCoreAddressInstance, tokenizeCoreAbiInstance, wallet1);
         await tokenizeCoreContract.once("receivedToken", (res) => {
             console.log(res);
@@ -74,10 +87,14 @@ setTimeout(async (tokenId, addressesToUse, erc20Supply, erc20Name, erc20Symbol, 
         await tokenizeCoreContract.once("lockingToken", (res) => {
             console.log(res);
         });
+        let deploymentCoreContract = new ethers.Contract(contractAddressData.deploymentCoreExampleAddress, contractAbiData.deploymentCoreExampleAbi, wallet1);
+        await deploymentCoreContract.once("checkIt", (res) => {
+            console.log(res);
+        });
     } catch(err){
         console.log(err);
     }
-}, 3000, tokenId, addressesToUse, erc20Supply, erc20Name, erc20Symbol, erc20Decimals, minimumShares, taxRate, deploymentData);
+}, 5000, tokenId, addressesToUse, erc20Supply, erc20Name, erc20Symbol, erc20Decimals, minimumShares, taxRate, _testData);
 
 
 

@@ -39,8 +39,6 @@ contract AssetTokenizationContract is Ownable {
     string public symbol;
     uint8 public decimals;
     uint taxRate;
-    uint defaultValue = 0;
-    uint defaultDuration = 0;
     uint minimumShares;
     uint distributionFlag = 0;
 
@@ -53,6 +51,7 @@ contract AssetTokenizationContract is Ownable {
         uint underlyingTokenId;
     }
 
+    event checkIt(bytes4 g);
 
     struct HarbergerSet{
         // denominated in paymentAddress - i.e. .5 = .5 shares per Dai
@@ -110,13 +109,16 @@ contract AssetTokenizationContract is Ownable {
         distributionAddress = _distributionAddress;
         //distribute initially
         DeploymentCoreInterface instanceDeploymentCore = DeploymentCoreInterface(_distributionAddress);
-        //     if(instanceDeploymentCore.onReceipt(totalSupply, _deploymentData) == bytes4(keccak256("onReceipt(address,uint,bytes)"))){
-        //         distributionFlag++;
-        //         return "success";
-        //     }
-        //     else{
-        //         return "err: unable to distribute initial tokens";
-        //     }
+        //     instanceDeploymentCore.onReceipt(totalSupply, _deploymentData);
+            // bytes4 g = DeploymentCoreInterface(_distributionAddress).onReceipt(totalSupply, _deploymentData);
+            // emit checkIt(g);
+            // if(instanceDeploymentCore.onReceipt(totalSupply, _deploymentData) == bytes4(keccak256("onReceipt(address,uint,bytes)"))){
+            //     distributionFlag++;
+            //     return "success";
+            // }
+            // else{
+            //     return "err: unable to distribute initial tokens";
+            // }
     }
 
 
