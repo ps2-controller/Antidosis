@@ -1,8 +1,7 @@
 //setup - wallet, ethers, data
-require('dotenv').config();
 const ethers = require('ethers');
 const contractAbiData = require ('./data/abis.js');
-const wallets = require('./config/ethersConfig.js');
+const wallets = require('./../ethersConfig.js');
 const wallet1 = wallets.wallet1;
 const contractAddressData = require('./data/deployedContractAddresses.js');
 
@@ -26,7 +25,6 @@ let amount;
 q();
 
 async function q(){
-    
     await rl.question('Address to receive Dai:', (ans) => {
         if(ans == 0){
             addressToReceive = wallet1.signingKey.address;

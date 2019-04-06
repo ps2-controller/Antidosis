@@ -16,7 +16,6 @@ contract TokenizeCore is IERC721Receiver, Ownable {
 	//testEvents
 	event receivedToken (uint256 tokenId);
 	event newAssetTokenizationContractCreated(AssetTokenizationContract instanceAssetTokenizationContract);
-	event lockingToken(string hi);
 
 	//structs
 	struct TokenToLock{
@@ -45,7 +44,7 @@ contract TokenizeCore is IERC721Receiver, Ownable {
 				uint8, 
 				uint256, 
 				uint256)
-			);
+			);	
 		//deploys new asset tokenization contract for the contributed token
 		AssetTokenizationContract instanceAssetTokenizationContract = lock721Token(msg.sender, _tokenId);
 		// set ERC20 variables
@@ -61,11 +60,7 @@ contract TokenizeCore is IERC721Receiver, Ownable {
 		return bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"));
 	}
 
-	function lock721Token (
-		address _tokenToLockAddress, 
-		uint256 _tokenToLockId) private returns(AssetTokenizationContract)
-	{
-		emit lockingToken("hi");
+	function lock721Token (address _tokenToLockAddress, uint256 _tokenToLockId) private returns(AssetTokenizationContract){
 		TokenToLock memory _tokenToLock = TokenToLock(_tokenToLockAddress, _tokenToLockId);
 		locked721Tokens.push(_tokenToLock); //need to think about if this will cause space issues
 		// //deploy asset tokenization contract

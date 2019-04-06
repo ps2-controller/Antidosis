@@ -1,11 +1,12 @@
-//imports
-require('dotenv').config();
 const ethers = require('ethers');
+const wallets = require('./../ethersConfig.js');
+
 //rinkeby provider
 //const provider = ethers.getDefaultProvider(network="rinkeby");
 const contractAddressData = require('./data/deployedContractAddresses.js');
 const contractAbiData = require ('./data/abis.js');
-const wallets = require('./config/ethersConfig.js');
+
+// console.log(wallets);
 const wallet1 = wallets.wallet1;
 
 let dummy721AddressInstance = contractAddressData.dummy721Address;
@@ -40,7 +41,6 @@ async function mintAndLock(){
                         addressesToUse, erc20Supply, erc20Name, erc20Symbol, erc20Decimals, minimumShares, taxRate
                     ]
                 );
-            
                 try{
                     await dummy721ContractWallet['safeTransferFrom(address,address,uint256,bytes)'](wallet1.signingKey.address, tokenizeCoreAddressInstance, tokenId, _data, {gasLimit: 5000000});
                     let tokenizeCoreContract = new ethers.Contract(tokenizeCoreAddressInstance, tokenizeCoreAbiInstance, wallet1);
@@ -66,3 +66,8 @@ async function mintAndLock(){
         console.log(err);
     }
 }
+
+
+
+
+

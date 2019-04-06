@@ -1,7 +1,7 @@
 require('dotenv').config();
 const ethers = require('ethers');
 const contractAbiData = require ('./data/abis.js');
-const wallets = require('./config/ethersConfig.js');
+const wallets = require('./../ethersConfig.js');
 const wallet1 = wallets.wallet1;
 
 const readline = require('readline');
@@ -36,4 +36,3 @@ async function check(assetTokenizationContractAddress, addressToCheck){
     await console.log("User value: " + harbergerSet[0].toNumber() + "\nUser duration: " + harbergerSet[1].toNumber() + "\nUser start time: " + harbergerSet[2].toNumber());
     process.exit();
 }
-

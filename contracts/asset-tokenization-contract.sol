@@ -3,8 +3,6 @@ pragma solidity ^0.5.0;
 import 'openzeppelin-solidity/contracts/token/ERC20/ERC20.sol';
 import 'openzeppelin-solidity/contracts/token/ERC20/IERC20.sol';
 import 'openzeppelin-solidity/contracts/ownership/Ownable.sol';
-import "./deployment-core-example.sol";
-import "./deployment-core-interface.sol";
 import "./driver-core.sol";
 import "./tokenize-core-interface.sol";
 
@@ -13,14 +11,14 @@ import "./tokenize-core-interface.sol";
 contract AssetTokenizationContract is IERC20, Ownable {
 
     //contract variables
-    //the ERC721 token locked to create the shares denominated in this ERC20 token
-    UnderlyingToken public contractUnderlyingToken;
+
+    
+    //setup variables
     // the token in which payments for shares are to be made
     address public paymentAddress;
+    IERC20 paymentAddressInstance; //instantiating payment address as ERC20 contract
     address public tokenizeCore;
     address public taxAddress;
-
-
     uint256 private _totalSupply;
     string public name;
     string public symbol;
@@ -28,31 +26,30 @@ contract AssetTokenizationContract is IERC20, Ownable {
     uint256 public taxRate;
     uint256 public minimumShares;
 
-    IERC20 paymentAddressInstance = IERC20(paymentAddress);
-    
+    uint256 accruedTaxes;
 
     //structs
+    //the ERC721 token locked to create the shares denominated in this ERC20 token
+    UnderlyingToken public contractUnderlyingToken; //one for the whole contract
     struct UnderlyingToken{
         address underlyingTokenAddress;
         uint256 underlyingTokenId;
     }
 
-    event checkIt(bytes4 g);
-
+    mapping (address => HarbergerSet) public harbergerSetByUser; //one per user
     struct HarbergerSet{
-        // denominated in paymentAddress - i.e. .5 = .5 shares per Dai
-        uint256 userValue;
-        //duration in seconds
-        uint256  userDuration;
+        uint256 userValue; // denominated in paymentAddress - i.e. .5 = .5 shares per (Dai * 10^18)
+        uint256  userDuration; //duration in seconds
         uint256  userStartTime;
         bool initialized;
     }
 
 
-    //mappings
+    //balance-relevant mappings
     mapping (address => uint256) public balances;
     mapping (address => mapping (address => uint256)) public allowed;
-    mapping (address => HarbergerSet) public harbergerSetByUser;
+
+    //per-user escrow information
     mapping (address => uint) public escrowedByUser;
     mapping (address => uint) public accruedReimbursementByUser;
 
@@ -83,34 +80,13 @@ contract AssetTokenizationContract is IERC20, Ownable {
 
     function setMainInfo(address _paymentAddress, address _taxAddress, uint256 _minimumShares, uint256 _taxRate, uint256 _erc20Supply) external tokenizeCoreOnly {
         paymentAddress = _paymentAddress;
+        paymentAddressInstance = IERC20(_paymentAddress);
         taxAddress = _taxAddress;
         minimumShares = _minimumShares;
         taxRate = _taxRate;
         _totalSupply = _erc20Supply;
         balances[address(this)] = _erc20Supply;
     }
-
-    // function setDistributionInfo(address _distributionAddress, bytes calldata _deploymentData) external tokenizeCoreOnly returns (string memory) {
-        //Actually, I don't think distribution flag is needed since it's tokenizeCoreOnly; 
-        //will think more about this later
-        // require(distributionFlag == 0);
-        
-        
-        // set distribution address
-        //distribute initially
-        // DeploymentCoreInterface instanceDeploymentCore = DeploymentCoreInterface();
-        //     instanceDeploymentCore.onReceipt(totalSupply, _deploymentData);
-            // bytes4 g = DeploymentCoreInterface(_distributionAddress).onReceipt(totalSupply, _deploymentData);
-            // emit checkIt(g);
-            // if(instanceDeploymentCore.onReceipt(_totalSupply, _deploymentData) == bytes4(keccak256("onReceipt(address,uint,bytes)"))){
-            //     distributionFlag++;
-            //     return "success";
-            // }
-            // else{
-            //     return "err: unable to distribute initial tokens";
-            // }
-    // }
-
 
    function setHarberger (uint _userValue, uint _userDuration) public {
         require (_userValue != 0);
@@ -138,15 +114,15 @@ contract AssetTokenizationContract is IERC20, Ownable {
     function transfer(address _to, uint256 _value) public returns (bool success) {
         // makes sure that once the underlying asset is unlocked, the tokens are destroyed
         require (msg.sender != tokenizeCore);
-        // require (_value > 0, "value must be greater than 0");
+        require (_value > 0, "value must be greater than 0");
         require ((harbergerSetByUser[_to].initialized == true) || (_to == tokenizeCore));
         
         require (balances[_to] + _value >= minimumShares && ((balances[msg.sender] - _value >= minimumShares) || balances[msg.sender] - _value == 0));
 
-        // if (balances[msg.sender] >= _value && _value > 0) {
-        //     doTransfer(msg.sender, _to, _value);
-        //     return true;
-        // } else { return false; }
+        if (balances[msg.sender] >= _value && _value > 0) {
+            doTransfer(msg.sender, _to, _value);
+            return true;
+        } else { return false; }
     }
 
 
@@ -171,42 +147,49 @@ contract AssetTokenizationContract is IERC20, Ownable {
         // _to should send _from (how much _from values each share) * (number of shares being taken)
         //if you want this to be synchronous, call approveAndCall if implemented on the token contract, then call this function
         if (_from != address(this)){
-            require (paymentAddressInstance.transferFrom(_to, _from, (harbergerSetByUser[_from].userValue * _value)), "Payment to token owner failed");
+            require (paymentAddressInstance.transferFrom(msg.sender, _from, (harbergerSetByUser[_from].userValue * _value)), "Payment to token owner failed");
         }
 
         //but they've still gotta pay taxes on any previously held tokens!
         if(_from != address(this)){
-        uint256 _senderTaxedPortion = 100 * (now - harbergerSetByUser[_from].userStartTime) / harbergerSetByUser[_from].userDuration;
-        paymentAddressInstance.transfer(taxAddress, taxRate * harbergerSetByUser[_from].userValue * _senderTaxedPortion);
-        paymentAddressInstance.transfer(_from, taxRate * harbergerSetByUser[_from].userValue * (1 - _senderTaxedPortion));
-        escrowedByUser[_from] -= taxRate * harbergerSetByUser[_from].userValue * harbergerSetByUser[_from].userDuration;
-        accruedReimbursementByUser[_from] += taxRate * harbergerSetByUser[_from].userValue * (1 - _senderTaxedPortion);
+        accruedTaxes += (_value / balances[_from]) * escrowedByUser[_from] * (now - harbergerSetByUser[_from].userStartTime) / harbergerSetByUser[_from].userDuration;
+        paymentAddressInstance.transfer(_from, (_value / balances[_from]) * escrowedByUser[_from] * (1 - (now - harbergerSetByUser[_from].userStartTime) / harbergerSetByUser[_from].userDuration));
+        escrowedByUser[_from] -= (_value / balances[_from]) * escrowedByUser[_from];
+        harbergerSetByUser[_from].userStartTime = now;
         }
-        // //let's clear out the recipient's escrow as well, so we can reset their userStartTime and make them a new escrow
-        uint256 _recipientTaxedPortion = 100 * (now - harbergerSetByUser[_to].userStartTime) / harbergerSetByUser[_to].userDuration; 
+
+        require(((harbergerSetByUser[_to].userStartTime + harbergerSetByUser[_to].userDuration) - now) >= 0);
+        //TODO: wherever possible take this out of the reimbursement and avoid a transfer where possible for efficiency
+        paymentAddressInstance.transferFrom(_to, address(this), taxRate * _value * harbergerSetByUser[_to].userValue * ((harbergerSetByUser[_to].userStartTime + harbergerSetByUser[_to].userDuration) - now) / 10000);
+        accruedTaxes += escrowedByUser[_to] * (now - harbergerSetByUser[_to].userStartTime) / harbergerSetByUser[_to].userDuration;
+        accruedReimbursementByUser[_to] += escrowedByUser[_to] * (1-(now - harbergerSetByUser[_to].userStartTime) / harbergerSetByUser[_to].userDuration);
+        escrowedByUser[_to] = taxRate * _value * harbergerSetByUser[_to].userValue * ((harbergerSetByUser[_to].userStartTime + harbergerSetByUser[_to].userDuration) - now);
+        harbergerSetByUser[_to].userDuration -= now - harbergerSetByUser[_to].userStartTime;
+        harbergerSetByUser[_to].userStartTime = now;
+
+        
+        //uint256 _recipientTaxedPortion = 100 * (now - harbergerSetByUser[_to].userStartTime) / harbergerSetByUser[_to].userDuration; 
         // //toconsider - instead of paying out the taxes, consider adding them to a state variable and paying it all out at once; 
         // //changes the economics of it though, so need to think through this
-        // paymentAddressInstance.transfer(taxAddress, taxRate * harbergerSetByUser[_to].userValue * _recipientTaxedPortion);
+        //paymentAddressInstance.transfer(taxAddress, taxRate * harbergerSetByUser[_to].userValue * _recipientTaxedPortion);
 
         // paymentAddressInstance.transfer(_to, taxRate * harbergerSetByUser[_to].userValue * (1 - _recipientTaxedPortion));
 
 
         // escrowedByUser[_to] -= taxRate * harbergerSetByUser[_from].userValue * harbergerSetByUser[_from].userDuration;
         // accruedReimbursementByUser[_to] += taxRate * harbergerSetByUser[_from].userValue * (1 - _senderTaxedPortion);
-            
         
-
         // //recipient now needs to escrow, so one day they can pay taxes and get reimbursed and all that fun stuff
         // paymentAddressInstance.transferFrom(_to, address(this), (harbergerSetByUser[_to].userValue * harbergerSetByUser[_to].userDuration * _value));
         // escrowedByUser[_to] = harbergerSetByUser[_to].userValue * harbergerSetByUser[_to].userDuration * _value;
         // harbergerSetByUser[_to].userStartTime = now;
         
-        emit testTransfer(_recipientTaxedPortion);
+        
 
-        // if (balances[_from] >= _value && _value > 0) {
-        //     doTransfer(_from, _to, _value);
-        //     return true;
-        // } else { return false; }
+        if (balances[_from] >= _value && _value > 0) {
+            doTransfer(_from, _to, _value);
+            return true;
+        } else { return false; }
     }
 
     function doTransfer(address _from, address _to, uint256 _value) internal {
@@ -215,6 +198,7 @@ contract AssetTokenizationContract is IERC20, Ownable {
         balances[_from] -= _value;
         balances [_to] += _value;
         emit Transfer(_from, _to, _value);
+        emit testTransfer(balances[_to]);
     }
 
 
@@ -289,14 +273,6 @@ contract AssetTokenizationContract is IERC20, Ownable {
         TokenizeCoreInterface instanceTokenizeCore = TokenizeCoreInterface(tokenizeCore);
         instanceTokenizeCore.unlockToken(contractUnderlyingToken.underlyingTokenAddress, contractUnderlyingToken.underlyingTokenId, msg.sender);
     }
-
-    // event getHarbergerUserSet(HarbergerSet harbergerSetByUser);
-
-    // function getHarbergerValue(address user) public returns (HarbergerSet memory) {
-    //     emit getHarbergerUserSet(harbergerSetByUser[user]);
-    //     return harbergerSetByUser[user];
-    // }
-
 
     event Transfer(
         address indexed _from,
