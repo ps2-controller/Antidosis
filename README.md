@@ -4,7 +4,7 @@ Antidosis is a [Harberger tax](https://medium.com/@simondlr/what-is-harberger-ta
 
 Normally, Harberger taxes are applied to nonfungible assets, targeting efficient distribution of taxed property given individual variances in valuation of nonfungible assets. 
 
-Antidosis varies from this pattern in that rather than directly Harberger-taxing the nonfungible asset, it is broken into discrete, *fungible* shares which are ([loosely](https://medium.com/hummingbot/the-myth-of-the-erc-20-token-standard-ab0d76cf8532)) compliant with the ERC-20 standard. We expect share-owners to have diminishing returns in their valuation of each additional share, which enables a market in which valuations are determined under a Harberger scheme. Shares can be nonconsensually purchased from owners at their self-assessed valuation
+Antidosis varies from this pattern in that rather than directly Harberger-taxing the nonfungible asset, it is broken into discrete, *fungible* shares which are ([loosely](https://medium.com/hummingbot/the-myth-of-the-erc-20-token-standard-ab0d76cf8532)) compliant with the ERC-20 standard. We expect share-owners to have diminishing returns in their valuation of each additional share, which enables a market in which valuations are determined under a Harberger scheme. Shares can be nonconsensually purchased from owners at their self-assessed valuation.
 
 ## Improvements on traditional tokenization
 
@@ -19,4 +19,4 @@ Antidosis solves this issue by removing the need for controller requirements to 
 
 This ensures that the underlying asset always remains redeemable at market rate while preserving settlement at the blockchain layer. 
 
-*CLI Demo coming soon*
+*CLI Demo coming soon!*
