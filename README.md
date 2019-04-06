@@ -8,7 +8,7 @@ Antidosis varies from this pattern in that rather than directly Harberger-taxing
 
 ## Improvements on traditional tokenization
 
-Traditionally, tokenization structures that break an asset into shares have poor redeemability frameworks. The total supply of shares should be redeemable for the underlying asset, and so the value of the sum of all shares should equal the market value of the underlying asset. However, if this is enforced on-chain, and one owner accidentally burns or loses their shares, the underlying asset can no longer be redeemed, and all other owners' shares become instantly worthless. 
+Traditionally, tokenization structures that break an asset into shares have poor redeemability frameworks. The total supply of shares should be redeemable for the underlying asset, and so the value of the sum of all shares should equal the market value of the underlying asset. However, if this is enforced on-chain, and one owner accidentally burns or loses even a single share, the underlying asset would no longer be redeemable, and all other owners' shares would become instantly worthless. 
 
 Workarounds for this issue tend to be some variant of the "controller" approach, in which a centralized entity is able to deterministically roll back or manipulate token ownership. This approach redistributes jurisdictional authority from the Ethereum settlement layer to a third party, vastly reducing the ownership guarantees of a blockchain. In this case, the use of a blockchain has some minor transparency benefits, but in terms of settlement offers several disadvantages in comparison with a traditional database. 
 
