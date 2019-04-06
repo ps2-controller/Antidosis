@@ -10,14 +10,11 @@ import "./IAssetTokenizationContract.sol";
 
 contract TokenizeCore is IERC721Receiver, Ownable {
 
-	//state variables
 	TokenToLock[] locked721Tokens;
 
-	//testEvents
 	event receivedToken (uint256 tokenId);
 	event newAssetTokenizationContractCreated(AssetTokenizationContract instanceAssetTokenizationContract);
 
-	//structs
 	struct TokenToLock{
 		address tokenToLockAddress;
 		uint tokenToLockId;
@@ -45,14 +42,12 @@ contract TokenizeCore is IERC721Receiver, Ownable {
 				uint256, 
 				uint256)
 			);	
-		//deploys new asset tokenization contract for the contributed token
+
 		AssetTokenizationContract instanceAssetTokenizationContract = lock721Token(msg.sender, _tokenId);
 		// set ERC20 variables
-			// address that handles logic for initial distribution of ERC20 tokens
-			// address _distributionAddress = addressesToUse[0];
-			// ERC20 contract address that denominates what payments/taxes are paid in (DAI contract address by default)
 			address _paymentAddress = addressesToUse[0];
-			// address of the recipient of all tax payments for this token
+
+		// address of the recipient of all tax payments for this token
 			address _taxAddress = addressesToUse[1];
 		IAssetTokenizationContract(address(instanceAssetTokenizationContract)).setERC20( _erc20Name, _erc20Symbol, _erc20Decimals);
 		IAssetTokenizationContract(address(instanceAssetTokenizationContract)).setMainInfo(addressesToUse[0], addressesToUse[1], _minimumShares, _taxRate, _erc20Supply);
@@ -62,8 +57,7 @@ contract TokenizeCore is IERC721Receiver, Ownable {
 
 	function lock721Token (address _tokenToLockAddress, uint256 _tokenToLockId) private returns(AssetTokenizationContract){
 		TokenToLock memory _tokenToLock = TokenToLock(_tokenToLockAddress, _tokenToLockId);
-		locked721Tokens.push(_tokenToLock); //need to think about if this will cause space issues
-		// //deploy asset tokenization contract
+		locked721Tokens.push(_tokenToLock); //need to think about if this will cause memory issues
 		AssetTokenizationContract newAssetTokenizationContract = new AssetTokenizationContract(_tokenToLockAddress, _tokenToLockId);
 
 		ERC20ToToken[address(newAssetTokenizationContract)] = _tokenToLock;

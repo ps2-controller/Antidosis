@@ -4,9 +4,9 @@
 
 
 //dev
-const tokenizeCoreAddress = `0x917Df5327f14024a5e7bE456cA5444DF99C45e11`;
-const dummy721Address = `0x7852fD3b088e6D0535f9BEdeE8dD11BcD27720F4`;
-const daiContractAddress = `0x36097E7D4D8b55AD5e2F0c36B6C83641C131F8eD`;
+const tokenizeCoreAddress = `0x2e2DfEb505D13bB96291bEeC7BB0A56f385a720F`;
+const dummy721Address = `0xf2dc1fFAf2aa9dE2b33615d18fC5b00912d47333`;
+const daiContractAddress = `0x84EDeD6e434cd9f54DAFfe571F92F9Fc5dB50Fe3`;
 
 module.exports = {
     tokenizeCoreAddress: tokenizeCoreAddress,

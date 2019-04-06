@@ -10,13 +10,8 @@ import "./tokenize-core-interface.sol";
 
 contract AssetTokenizationContract is IERC20, Ownable {
 
-    //contract variables
-
-    
-    //setup variables
-    // the token in which payments for shares are to be made
     address public paymentAddress;
-    IERC20 paymentAddressInstance; //instantiating payment address as ERC20 contract
+    IERC20 paymentAddressInstance;
     address public tokenizeCore;
     address public taxAddress;
     uint256 private _totalSupply;
@@ -28,15 +23,14 @@ contract AssetTokenizationContract is IERC20, Ownable {
 
     uint256 accruedTaxes;
 
-    //structs
-    //the ERC721 token locked to create the shares denominated in this ERC20 token
-    UnderlyingToken public contractUnderlyingToken; //one for the whole contract
+
+    UnderlyingToken public contractUnderlyingToken; 
     struct UnderlyingToken{
         address underlyingTokenAddress;
         uint256 underlyingTokenId;
     }
 
-    mapping (address => HarbergerSet) public harbergerSetByUser; //one per user
+    mapping (address => HarbergerSet) public harbergerSetByUser; 
     struct HarbergerSet{
         uint256 userValue; // denominated in paymentAddress - i.e. .5 = .5 shares per (Dai * 10^18)
         uint256  userDuration; //duration in seconds
@@ -44,12 +38,9 @@ contract AssetTokenizationContract is IERC20, Ownable {
         bool initialized;
     }
 
-
-    //balance-relevant mappings
     mapping (address => uint256) public balances;
     mapping (address => mapping (address => uint256)) public allowed;
 
-    //per-user escrow information
     mapping (address => uint) public escrowedByUser;
     mapping (address => uint) public accruedReimbursementByUser;
 
@@ -60,7 +51,6 @@ contract AssetTokenizationContract is IERC20, Ownable {
         tokenizeCore = msg.sender;
         contractUnderlyingToken.underlyingTokenAddress = _underlyingTokenAddress;
         contractUnderlyingToken.underlyingTokenId = _underlyingTokenId;
-
     }
 
     modifier tokenizeCoreOnly{
@@ -99,17 +89,12 @@ contract AssetTokenizationContract is IERC20, Ownable {
         uint256 taxedPortion = (now - harbergerSetByUser[msg.sender].userStartTime) / harbergerSetByUser[msg.sender].userDuration;
         paymentAddressInstance.transfer(taxAddress, taxRate * harbergerSetByUser[msg.sender].userValue * taxedPortion);
         paymentAddressInstance.transfer(msg.sender, taxRate * harbergerSetByUser[msg.sender].userValue * (1-taxedPortion));
-
         }
 
         harbergerSetByUser[msg.sender].userValue = _userValue;
         harbergerSetByUser[msg.sender].userDuration = _userDuration;
         harbergerSetByUser[msg.sender].userStartTime = now;
     }
-
-    uint256 num = 1;
-
-    event testTransfer(uint256 num);
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
         // makes sure that once the underlying asset is unlocked, the tokens are destroyed
@@ -128,7 +113,7 @@ contract AssetTokenizationContract is IERC20, Ownable {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         /*todo offer a version of this function where recipient can change their duration/value within the function call
-        will be same params + uint _userDuration, uint _userValue; these will be set before determining escrow price
+        will be overloaded function, same params + uint _userDuration, uint _userValue; these will be set before determining escrow price
         */
 
         //make sure once the erc721 token is unlocked, tokens are destroyed
@@ -145,7 +130,7 @@ contract AssetTokenizationContract is IERC20, Ownable {
         
         // unless it's initial distribution, let's make sure we pay the _from when we're taking their shares
         // _to should send _from (how much _from values each share) * (number of shares being taken)
-        //if you want this to be synchronous, call approveAndCall if implemented on the token contract, then call this function
+        //TODO: if you want this to be synchronous, call approveAndCall if implemented on the token contract, then call this function
         if (_from != address(this)){
             require (paymentAddressInstance.transferFrom(msg.sender, _from, (harbergerSetByUser[_from].userValue * _value)), "Payment to token owner failed");
         }
@@ -207,6 +192,7 @@ contract AssetTokenizationContract is IERC20, Ownable {
         accruedReimbursementByUser[msg.sender] -= amount;
         paymentAddressInstance.transfer(msg.sender, amount);
     }
+
     /*
     allows this contract to call an arbitrary function on a passed "driver" contract
     example implementation: "onlyOwner" is a smart contract address with a voting
@@ -222,7 +208,7 @@ contract AssetTokenizationContract is IERC20, Ownable {
     //	return escrowedByUser[_user] - (harbergerSetByUser[_user].value * taxRate * balances[_user] * 
     //}
 
-    //can be used if paymentAddress has approveAndCall
+    //TODO: can be used if paymentAddress has approveAndCall
     //function allowAndTransferFrom(address _from, address _to, uint256 _value, bytes _extraData){
 
     //}
@@ -252,10 +238,9 @@ contract AssetTokenizationContract is IERC20, Ownable {
 
     function () external {
     //if ether is sent to this address, send it back.
-  
     }
 
-    //function approveAndCall(address _spender, uint256 _value, bytes memory _extraData) public returns (bool success) {
+    //TODO: function approveAndCall(address _spender, uint256 _value, bytes memory _extraData) public returns (bool success) {
     //	allowed[msg.sender][_spender] = _value;
     //	Approval(msg.sender, _spender, _value);
 //
@@ -285,6 +270,8 @@ contract AssetTokenizationContract is IERC20, Ownable {
     address indexed _spender,
     uint256 _amount
     );
+
+    event testTransfer(uint256 num);
 
 }
 

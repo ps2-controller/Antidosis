@@ -1,8 +1,8 @@
 {
   "name": "Antidosis",
   "version": "1.0.0",
-  "description": "",
-  "main": "truffle-config.js",
+  "description": "Creates redeemable tokenized erc721 assets broken into Harberger-taxed ERC 20s",
+  "main": "index.js",
   "directories": {
     "test": "test"
   },
@@ -14,13 +14,13 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ps2-controller/tokenize-that.git"
+    "url": "git+https://github.com/ps2-controller/Antidosis.git"
   },
   "keywords": [],
   "bugs": {
-    "url": "https://github.com/ps2-controller/tokenize-that/issues"
+    "url": "https://github.com/ps2-controller/Antidosis/issues"
   },
-  "homepage": "https://github.com/ps2-controller/tokenize-that#readme",
+  "homepage": "https://github.com/ps2-controller/Antidosis#readme",
   "dependencies": {
     "dotenv": "^7.0.0",
     "ethers": "^4.0.27",
