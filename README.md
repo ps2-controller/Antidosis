@@ -1,3 +1,5 @@
+*Check out the [CLI demo!](https://github.com/ps2-controller/Antidosis/blob/master/documents/cli-demo.md)*
+
 # Overview
 
 Antidosis is a [Harberger tax](https://medium.com/@simondlr/what-is-harberger-tax-where-does-the-blockchain-fit-in-1329046922c6) implementation on Ethereum that applies Harberger taxes in a non-traditional way that aims to preserve the incentive structure of traditional Harberger taxes. 
@@ -19,19 +21,6 @@ Antidosis solves this issue by removing the need for controller requirements to 
 
 This ensures that the underlying asset always remains redeemable at market rate while preserving settlement at the blockchain layer. 
 
-## Cli Demo
 
-### Getting Started
-Download this repo. 
-
-
-To run this demo, you will need [Truffle and Ganache](https://truffleframework.com/docs).
-
-Ensure that Ganache is running at port 8545 (or change the port in `ethersConfig.js`).
-
-run `touch .env` and `open .env`.
-Update the .env file's contents per `dotenvExample.txt`.
-
-Clone this repo and run `npm run cli-demo`. Truffle 
 
 
