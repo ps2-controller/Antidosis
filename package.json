@@ -8,7 +8,9 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node index.js",
+    "cli-demo": "node cli-demo",
+    "cli-demo-resume": "node cli-demo-resume"
   },
   "author": "",
   "license": "ISC",
@@ -25,6 +27,7 @@
     "dotenv": "^7.0.0",
     "ethers": "^4.0.27",
     "openzeppelin-solidity": "2.1.2",
+    "solc": "^0.5.7",
     "truffle-hdwallet-provider": "^1.0.4"
   }
 }

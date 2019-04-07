@@ -1,0 +1,9 @@
+localMnemonic='[mnemonic for Truffle HD Wallet Provider]'
+
+privateKey1=[private key for deployment to Rinkeby or Production]
+privateKey2=[private key for deployment to Rinkeby or Production]
+
+
+privateKey1Dev=[private key from Ganache]
+
+privateKey2Dev=[private key from Ganache]
