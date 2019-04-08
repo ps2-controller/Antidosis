@@ -3,6 +3,10 @@
 ## Getting Started
 Clone this repo. 
 
+`cd Antidosis`
+
+`npm install`
+
 To run this demo, you will need [Truffle and Ganache](https://truffleframework.com/docs).
 
 Ensure that Ganache is running at port 8545 (or change the port in `ethersConfig.js`).
