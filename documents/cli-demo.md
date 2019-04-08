@@ -1,7 +1,7 @@
 # Antidosis CLI Demo
 
 ## Getting Started
-Download this repo. 
+Clone this repo. 
 
 To run this demo, you will need [Truffle and Ganache](https://truffleframework.com/docs).
 
