@@ -10,11 +10,11 @@ Antidosis varies from this pattern in that rather than directly Harberger-taxing
 
 ## Improvements on traditional tokenization
 
-Traditionally, tokenization structures that break an asset into shares have poor redeemability frameworks. The total supply of shares should be redeemable for the underlying asset, and so the value of the sum of all shares should equal the market value of the underlying asset. However, if this is enforced on-chain, and one owner accidentally burns or loses even a single share, the underlying asset would no longer be redeemable, and all other owners' shares would become instantly worthless. 
+Traditionally, tokenization structures that break an asset into shares have poor redeemability frameworks. The total supply of shares should be redeemable for the underlying asset, so the value of the sum of all shares should equal the market value of the underlying asset. However, if this is enforced on-chain, and one owner accidentally burns or loses even a single share, the underlying asset would no longer be redeemable, and all other owners' shares would become instantly worthless. 
 
 Workarounds for this issue tend to be some variant of the "controller" approach, in which a centralized entity is able to deterministically roll back or manipulate token ownership. This approach redistributes jurisdictional authority from the Ethereum settlement layer to a third party, vastly reducing the ownership guarantees of a blockchain. In this case, the use of a blockchain has some minor transparency benefits, but in terms of settlement offers several disadvantages in comparison with a traditional database. 
 
-Antidosis solves this issue by removing the need for controller requirements to preserve share value. If a token-owner loses their private key, one of the two following possibilities guarantees recoverability of funds:
+Antidosis solves this issue by removing the need for controller requirements to preserve share value. If a token-owner loses their private key, one of the two following possibilities guarantees redeemability of the underlying asset's value:
 
 - Their escrowed funds run out, and they are no longer able to pay taxes; this opens the market for anyone to declare a nonzero valuation and claim ownership of the tokens
 - Another owner purchases the tokens from the burned address at the declared valuation
