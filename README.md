@@ -16,10 +16,10 @@ Workarounds for this issue tend to be some variant of the "controller" approach,
 
 Antidosis solves this issue by removing the need for controller requirements to preserve share value. If a token-owner loses their private key, one of the two following possibilities guarantees redeemability of the underlying asset's value:
 
-- Their escrowed funds run out, and they are no longer able to pay taxes; this opens the market for anyone to declare a nonzero valuation and claim ownership of the tokens
-- Another owner purchases the tokens from the burned address at the declared valuation
+- Their escrowed funds run out, and they are no longer able to pay taxes; this opens the market for anyone to declare a nonzero valuation and claim ownership of the tokens.
+- Another owner purchases the tokens from the burned address at the declared valuation. No action from the burned address is required.
 
-This ensures that the underlying asset always remains redeemable at market rate while preserving settlement at the blockchain layer. 
+This ensures that the underlying asset always remains redeemable at market rate while preserving settlement for share ownership at the blockchain layer. 
 
 
 
