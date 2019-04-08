@@ -14,10 +14,13 @@ Clone this repo and run `npm run cli-demo`. If migrations are not up to date, tr
 
 Run `cd src`, `cd data`, and `open deployedContractAddresses.js`. Update the addresses in this file to the addresses from your truffle migration. *Note, I'm working on automating this process - bear with me!*
 
+This deploys the core Antidosis contract, a dummy ERC-721 contract, and an ERC-20 contract we will call `Dai` (no dollar peg since it's testnet) which is a `payment token` in which taxes, purchases, etc are denominated.
+
 You are now in the Antidosis CLI daemon and have access to the Antidosis commands. For a full description of each Antidosis command and how to use it, [click here](https://github.com/ps2-controller/Antidosis/blob/master/documents/cli-demo-commands.md). Otherwise, you can follow the guided demo flow of commands.
 
 ## Guided CLI demo
-*Note that currently, when each command is run in the demo, you will need to run `npm run cli-demo` again to restart the daemon.*
+*Note that currently, when each command is run in the demo, you will need to run `npm run cli-demo` again to restart the daemon. Hoping to fix this soon.*
+
 First, type `mintAndLock`. This creates a new ERC-721 token on our dummy ERC-721 contract, and sends the newly created token to our Antidosis core contract. The ERC-721 token is now locked, and a corresponding ERC-20 contract, the `Asset Tokenization Contract` is now deployed with some default values for Harberger tax rate, Harberger tax recipient, ERC 20 name, supply etc. These values are configurable, and they will soon be configurable through the CLI; for now, default values can be modified in `./src/mintAndLock.js`. 
 
 Save the AssetTokenizationContract address.
@@ -26,7 +29,7 @@ Now, you will need Dai to pay the Harberger taxes on any shares you acquire. We 
 
 Reopen the daemon with `npm run cli-demo`.
 
-Run `takeDai`: you will be prompted for your address and the amount of Dai you would like to take. A blank entry for the address will use your default accessing address. Take as much Dai from the dummy contract as you want - 10000000 may be a good amount. 
+Run `getDai`: you will be prompted for your address and the amount of Dai you would like to take. A blank entry for the address will use your default accessing address. Take as much Dai from the dummy contract as you want - 10000000 may be a good amount. 
 
 Reopen the daemon with `npm run cli-demo`.
 
