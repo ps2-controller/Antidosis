@@ -9,7 +9,8 @@ const wallet1 = wallets.wallet1;
 const readline = require('readline');
 const rl = readline.createInterface({
     input: process.stdin,
-    output: process.stdout
+    output: process.stdout,
+    terminal: false
 });
 
 

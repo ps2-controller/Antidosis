@@ -2681,37 +2681,6 @@
       "links": {},
       "address": "0x8E9B16375032D94Cf48687D3Bcd4051bae457B1D",
       "transactionHash": "0x2a4034bd1a8fc9389e3128cae18670ac178861a48490cfd75caad5b3aa74e262"
-    },
-    "5777": {
-      "events": {
-        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "name": "previousOwner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "name": "newOwner",
-              "type": "address"
-            }
-          ],
-          "name": "OwnershipTransferred",
-          "type": "event",
-          "signature": "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0"
-        }
-      },
-      "links": {},
-      "address": "0xEFD89a65DF7D0759425E528B406b9Af77aBee7B1",
-      "transactionHash": "0xa67f1a1416fe2992a8aef9ad2a56c06d149bcee28854d0c580878e088f730261"
-    },
-    "1553480041081": {
-      "events": {},
-      "links": {},
-      "address": "0xC856784ed2D6D7bf835dAB7a2732f3483852D6b1",
-      "transactionHash": "0x88769d89036ec724d5c6b28150fbc3bdd9734d52a7fdbeb3741bed9557246975"
     }
   },
   "schemaVersion": "3.0.0",

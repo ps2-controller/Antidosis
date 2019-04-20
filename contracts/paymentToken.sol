@@ -26,7 +26,7 @@ contract Dai is IERC20, Ownable {
 
     mapping (address => mapping (address => uint256)) private _allowed;
 
-    uint256 private _totalSupply;
+    uint256 private _totalSupply = 1000000000000 * 10^18;
 
     event tokenFaucet(uint256 amount);
 
@@ -40,7 +40,7 @@ contract Dai is IERC20, Ownable {
     function createTokens(address recipient, uint amount) public {
         _balances[recipient] = _balances[recipient].add(amount);
         _totalSupply = _totalSupply.add(amount);
-        emit tokenFaucet(amount);
+        emit tokenFaucet(balanceOf(recipient));
     }
 
     /**

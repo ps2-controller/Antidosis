@@ -38,7 +38,7 @@ async function mintAndLock(){
                         'address[2] memory', 'uint256', 'string memory', 'string memory', 'uint8', 'uint256', 'uint256'
                     ], 
                     [
-                        addressesToUse, erc20Supply, erc20Name, erc20Symbol, erc20Decimals, minimumShares, taxRate
+                        addressesToUse, erc20Supply, erc20Name, erc20Symbol, erc20Decimals, minShares, taxRate
                     ]
                 );
                 try{
