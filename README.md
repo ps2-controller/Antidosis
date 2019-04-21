@@ -1,5 +1,5 @@
 
-*Check out the [in-progress front-end](https://github.com/ps2-controller/Antidosis-front-end)*
+*Check out the [in-progress front-end!](https://github.com/ps2-controller/Antidosis-front-end)*
 
 *Check out the [CLI demo!](https://github.com/ps2-controller/Antidosis/blob/master/documents/cli-demo.md)*
 
