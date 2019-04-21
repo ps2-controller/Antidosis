@@ -122,11 +122,11 @@ contract AssetTokenizationContract is Ownable, DSMath {
         require (_from != tokenizeCore, "error");
         require (_value > 0, "value must be greater than 0");
         //make sure recipient has harberger tax value and duration set
-        require (harbergerSetByUser[_to].initialized == true || _to == tokenizeCore, "recipient must have harberger tax set");
+        require (harbergerSetByUser[_to].initialized == true || _to == tokenizeCore);
 
         // //if there's a minimumShares, make sure it's enforced by both sender and receiver after the tx
         // require (super.add(balances[_to], _value) >= minimumShares && (super.sub(balances[_from], _value) >= minimumShares || super.sub(balances[_from], _value) == 0));
-        require (balances[_to] + _value >= minimumShares && (balances[_from] - _value >= minimumShares || balances[_from] - _value == 0));
+        require ((balances[_to] + _value) >= minimumShares && ((balances[_from] - _value) >= minimumShares || (balances[_from] - _value) == 0));
         
         
         // unless it's initial distribution, let's make sure we pay the _from when we're taking their shares
@@ -137,18 +137,17 @@ contract AssetTokenizationContract is Ownable, DSMath {
         }
 
         // //but they've still gotta pay taxes on any previously held tokens!
-        if(_from != address(this) && escrowedByUser[_from] > 0){
+        if((_from != address(this)) && (escrowedByUser[_from] > 0)){
             accruedTaxes += (_value / balances[_from]) * escrowedByUser[_from] * (now - harbergerSetByUser[_from].userStartTime) / harbergerSetByUser[_from].userDuration;
             paymentAddressInstance.transfer(_from, (_value / balances[_from]) * escrowedByUser[_from] * (1 - (now - harbergerSetByUser[_from].userStartTime) / harbergerSetByUser[_from].userDuration));
             escrowedByUser[_from] -= (_value / balances[_from]) * escrowedByUser[_from];
             harbergerSetByUser[_from].userStartTime = now;
         }
 
-        // require((super.sub((super.add(harbergerSetByUser[_to].userStartTime, harbergerSetByUser[_to].userDuration)), now)) >= 0);
-        require( harbergerSetByUser[_to].userStartTime + harbergerSetByUser[_to].userDuration - now >= 0);
+        require((harbergerSetByUser[_to].userStartTime + harbergerSetByUser[_to].userDuration - now) >= 0);
         //TODO: whferever possible take this out of the reimbursement and avoid a transfer where possible for efficiency
         paymentAddressInstance.transferFrom(_to, address(this), taxRate * _value * harbergerSetByUser[_to].userValue * ((harbergerSetByUser[_to].userStartTime + harbergerSetByUser[_to].userDuration - now) / (uint(10) ** decimals)));
-        emit worksChecker(1);
+        emit worksChecker(harbergerSetByUser[_to].userValue);
         accruedTaxes += escrowedByUser[_to] * (now - harbergerSetByUser[_to].userStartTime) / harbergerSetByUser[_to].userDuration;
         accruedReimbursementByUser[_to] += escrowedByUser[_to] * (1-(now - harbergerSetByUser[_to].userStartTime) / harbergerSetByUser[_to].userDuration);
         // escrowedByUser[_to] = taxRate * _value * harbergerSetByUser[_to].userValue * ((harbergerSetByUser[_to].userStartTime + harbergerSetByUser[_to].userDuration) - now);
@@ -160,9 +159,8 @@ contract AssetTokenizationContract is Ownable, DSMath {
 
     function doTransfer(address _from, address _to, uint256 _value) internal {
         require((_to != address(0)) && (_to != address(this)));
-        require(_value <= balances[_from]);
         balances[_from] -= _value;
-        balances [_to] += _value;
+        balances[_to] += _value;
         emit Transfer(_from, _to, _value);
         emit testTransfer(balances[_to]);
     }
